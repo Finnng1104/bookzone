@@ -1,21 +1,38 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch, FaHeart, FaBars, FaPhone, FaEnvelope, FaClock, FaComments, FaUser, FaTimes, FaHeadset } from "react-icons/fa";
 
 const Header = () => {
   const [search, setSearch] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // 🔹 Xử lý ẩn/hiện Header khi cuộn trang
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 50) {
+        setIsVisible(false); // Ẩn Header khi cuộn xuống
+      } else {
+        setIsVisible(true); // Hiện Header khi cuộn lên
+      }
+      setLastScrollY(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <header className="bg-white text-black relative">
+    <header className={`fixed top-0 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
       {/* 🔹 Thanh thông tin liên hệ */}
       <div className="bg-primary text-white text-sm py-2">
-        <div className=" w-full xl:container mx-auto flex justify-between px-4 flex-wrap">
+        <div className="w-full xl:container mx-auto flex justify-between px-4 flex-wrap">
           {/* 🔸 Thông tin liên hệ */}
           <div className="flex space-x-4 hidden md:flex">
             <span className="flex items-center space-x-2">
-            <FaPhone size={14} /> <span>+208-666-0112</span>
+              <FaPhone size={14} /> <span>+208-666-0112</span>
             </span>
             <span className="flex items-center space-x-2">
               <FaEnvelope size={14} /> <span>info@example.com</span>
@@ -38,7 +55,7 @@ const Header = () => {
       </div>
 
       {/* 🔹 Main Header */}
-      <div className=" w-full xl:container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="w-full xl:container mx-auto px-4 py-4 flex items-center justify-between">
         {/* 🔸 Logo */}
         <Link href="/" className="text-xl md:text-2xl font-bold text-primary">BOOKZONE</Link>
 
@@ -70,7 +87,7 @@ const Header = () => {
           <button className="md:hidden text-primary hover:text-opacity-80">
             <FaSearch size={20} />
           </button>
-          
+
           <Link href="/favorites" className="text-primary hover:text-opacity-80 hidden sm:block">
             <FaHeart size={20} />
           </Link>
@@ -79,35 +96,12 @@ const Header = () => {
           </Link>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="lg:hidden text-primary hover:text-opacity-80"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
-        </div>
-      </div>
-
-      {/* 🔹 Mobile Menu */}
-      <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <div className={`absolute right-0 top-0 h-full w-64 bg-white transform transition-transform duration-300 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-          <div className="p-5">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-primary">Menu</h2>
-              <button 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-gray-500 hover:text-primary"
-              >
-                <FaTimes size={24} />
-              </button>
-            </div>
-            <nav className="flex flex-col space-y-4">
-              <Link href="/" className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100">Trang chủ</Link>
-              <Link href="/book" className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100">Thư viện sách</Link>
-              <Link href="/blog" className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100">Bài viết</Link>
-              <Link href="/contact" className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100">Liên hệ</Link>
-            </nav>
-          </div>
         </div>
       </div>
     </header>
