@@ -10,7 +10,7 @@ interface InputFieldProps {
 
 const InputField: React.FC<InputFieldProps> = ({ label, type = "text", name, value, onChange }) => {
   return (
-    <div className="mb-4 w-full">
+    <div className="mt-3 w-full">
       <label className="block text-gray-700 font-medium">{label}</label>
       <input
         type={type}

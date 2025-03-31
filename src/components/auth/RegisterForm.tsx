@@ -14,7 +14,30 @@ const RegisterForm: React.FC = () => {
     confirmPassword: "",
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const router = useRouter();
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!formData.fullName.trim()) newErrors.fullName = "Họ và tên không được để trống.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email không được để trống.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email không hợp lệ.";
+    }
+    if (!formData.password) {
+      newErrors.password = "Mật khẩu không được để trống.";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Mật khẩu phải có ít nhất 6 ký tự.";
+    }
+    if (formData.confirmPassword !== formData.password) {
+      newErrors.confirmPassword = "Mật khẩu xác nhận không khớp.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,16 +45,42 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register data:", formData);
-    router.push("/dashboard");
+    if (validateForm()) {
+      console.log("Register data:", formData);
+      router.push("/dashboard");
+    }
   };
 
   return (
     <AuthForm title="Đăng Ký" onSubmit={handleSubmit}>
       <div className="w-full max-w-md flex flex-col items-center">
-        <InputField label="Họ và tên" type="text" name="fullName" value={formData.fullName} onChange={handleChange} />
-        <InputField label="Email" type="email" name="email" value={formData.email} onChange={handleChange} />
-        <InputField label="Mật khẩu" type="password" name="password" value={formData.password} onChange={handleChange} />
+        <InputField 
+          label="Họ và tên" 
+          type="text" 
+          name="fullName" 
+          value={formData.fullName} 
+          onChange={handleChange} 
+        />
+        {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName}</p>}
+
+        <InputField 
+          label="Email" 
+          type="email" 
+          name="email" 
+          value={formData.email} 
+          onChange={handleChange} 
+        />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
+        <InputField 
+          label="Mật khẩu" 
+          type="password" 
+          name="password" 
+          value={formData.password} 
+          onChange={handleChange} 
+        />
+        {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
+
         <InputField
           label="Xác nhận mật khẩu"
           type="password"
@@ -39,6 +88,7 @@ const RegisterForm: React.FC = () => {
           value={formData.confirmPassword}
           onChange={handleChange}
         />
+        {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
 
         {/* Nút đăng ký */}
         <button
