@@ -1,18 +1,26 @@
+import Header from "@/components/layout/header";
 import type { Metadata } from "next";
 import "./globals.css";
+import Footer from "@/components/layout/footer/Footer";
+import BackToTop from "@/components/ui/BackToTop";
 
 export const metadata: Metadata = {
-  title: "My Next.js App",
-  description: "A modern Next.js application with Tailwind CSS",
+  title: "Bookzone",
+  description: "Your favorite bookstore",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-gray-100">
-        {children}
+    <html lang="vi">
+      <body className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+        <BackToTop /> {/* Thêm nút Back to Top */}
       </body>
     </html>
   );
