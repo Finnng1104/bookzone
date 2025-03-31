@@ -25,7 +25,7 @@ const Header = () => {
   }, [lastScrollY]);
 
   return (
-    <header className={`fixed top-0 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
+    <header className={`fixed top-0 z-50 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
       {/* 🔹 Thanh thông tin liên hệ */}
       <div className="bg-primary text-white text-sm py-2">
         <div className="w-full xl:container mx-auto flex justify-between px-4 flex-wrap">
