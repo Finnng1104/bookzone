@@ -5,10 +5,13 @@ import InputField from "./InputField";
 import AuthForm from "./AuthForm";
 import { FcGoogle } from "react-icons/fc";
 import ForgotPasswordModal from "./ForgotPasswordModal";
-
+import { useRouter } from "next/navigation";
+import { useLogin } from "@/hooks/useAuth";
+import Cookies from "js-cookie";
 const LoginForm: React.FC = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: "", password: "", fullname: "" });
+  const [errors, setErrors] = useState<{ email?: string; password?: string; fullname?: string; general?: string }>({});
   const [isForgotPasswordOpen, setForgotPasswordOpen] = useState(false);
 
   const validate = () => {
@@ -32,13 +35,30 @@ const LoginForm: React.FC = () => {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const {mutateAsync: loginUser, isLoading} = useLogin();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     if (validate()) {
-      console.log("Đăng nhập thành công với:", formData);
+      try {
+        const loginResponse = await loginUser({
+          email: formData.email,
+          password: formData.password,
+        });
+  
+        const { user, refresh_token } = loginResponse;
+  
+        
+        Cookies.set("user", JSON.stringify(user), { expires: 7 });
+        Cookies.set("refresh_token", refresh_token, { expires: 7 });
+  
+        router.push("/"); // Chuyển hướng về trang chủ hoặc trang khác
+      } catch (error) {
+        setErrors({ general: "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập." });
+      }
     }
   };
-
   return (
     <>
       <AuthForm title="Đăng Nhập" onSubmit={handleSubmit}>
@@ -53,10 +73,17 @@ const LoginForm: React.FC = () => {
             <button type="button" onClick={() => setForgotPasswordOpen(true)}>Quên mật khẩu?</button>
           </div>
 
-          <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded-xl mt-4 hover:bg-blue-600 transition-all duration-300 shadow-lg text-lg font-semibold">
-            Đăng Nhập
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-3 rounded-xl mt-4 hover:bg-blue-600 transition-all duration-300 shadow-lg text-lg font-semibold"
+            disabled={isLoading}
+          >
+            {isLoading ? "Đang đăng nhập..." : "Đăng Nhập"}
           </button>
-
+          {/* Hiển thị lỗi tổng quan */}
+          {errors.general && (
+            <p className="text-red-500 text-center mt-4">{errors.general}</p>
+          )}
           <div className="mt-6 text-center text-gray-600 font-medium">Hoặc đăng nhập bằng</div>
           <div className="flex justify-center mt-4">
             <button className="flex items-center gap-3 px-6 py-3 bg-white border border-gray-300 rounded-lg shadow-md hover:bg-gray-100 transition-all duration-300">
