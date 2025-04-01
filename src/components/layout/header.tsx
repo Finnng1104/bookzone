@@ -3,6 +3,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaSearch, FaHeart, FaBars, FaPhone, FaEnvelope, FaClock, FaComments, FaUser, FaTimes, FaHeadset } from "react-icons/fa";
 import Cookies from "js-cookie"; 
+
+
+
+
 const Header = () => {
   const [search, setSearch] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -39,6 +43,8 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+
+  
 
   return (
     <header className={`fixed top-0 z-50 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
@@ -115,7 +121,7 @@ const Header = () => {
                 className="flex items-center space-x-2 text-primary hover:text-opacity-80"
               >
                 <FaUser size={20} />
-                <span className="hidden md:inline-block">{user.fullname}</span>
+                <span className="hidden md:inline-block">{user.email}</span>
               </button>
 
               {/* Dropdown menu */}
