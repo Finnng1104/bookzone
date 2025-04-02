@@ -2,13 +2,33 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaSearch, FaHeart, FaBars, FaPhone, FaEnvelope, FaClock, FaComments, FaUser, FaTimes, FaHeadset } from "react-icons/fa";
+import Cookies from "js-cookie"; 
+
+
+
 
 const Header = () => {
   const [search, setSearch] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [user, setUser] = useState<{ email?: string; fullname?: string } | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State cho dropdown
 
+  useEffect(() => {
+    const userCookie = Cookies.get("user");
+    console.log(userCookie); 
+    
+    if (userCookie) {
+      setUser(JSON.parse(userCookie)); 
+      console.log(setUser(JSON.parse(userCookie)));
+      
+    }
+  }, []);
+  const handleLogout = () => {
+    Cookies.remove("user");
+    setUser(null); 
+  };
   // 🔹 Xử lý ẩn/hiện Header khi cuộn trang
   useEffect(() => {
     const handleScroll = () => {
@@ -24,8 +44,10 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  
+
   return (
-    <header className={`fixed top-0 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
+    <header className={`fixed top-0 z-50 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
       {/* 🔹 Thanh thông tin liên hệ */}
       <div className="bg-primary text-white text-sm py-2">
         <div className="w-full xl:container mx-auto flex justify-between px-4 flex-wrap">
@@ -91,9 +113,38 @@ const Header = () => {
           <Link href="/favorites" className="text-primary hover:text-opacity-80 hidden sm:block">
             <FaHeart size={20} />
           </Link>
-          <Link href="/login" className="text-primary hover:text-opacity-80">
-            <FaUser size={20} />
-          </Link>
+          {user ? (
+            <div className="relative">
+              {/* User icon */}
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center space-x-2 text-primary hover:text-opacity-80"
+              >
+                <FaUser size={20} />
+                <span className="hidden md:inline-block">{user.email}</span>
+              </button>
+
+              {/* Dropdown menu */}
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg"
+                  onMouseLeave={() => setDropdownOpen(false)} // Ẩn dropdown khi rời chuột
+                >
+                  <button
+                    onClick={handleLogout}
+                    className="block w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className="text-primary hover:text-opacity-80">
+              <FaUser size={20} />
+            </Link>
+          )}
+          
 
           {/* Mobile Menu Button */}
           <button

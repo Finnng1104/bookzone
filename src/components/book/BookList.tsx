@@ -8,68 +8,36 @@ import { Pagination } from "swiper/modules";
 import BookCard from "@/components/ui/BookCard";
 import Link from "next/link";
 
+interface Book {
+  slug: string; // 🔥 Thay vì `_id`, sử dụng `slug`
+  title: string;
+  coverImage: string;
+  series: string;
+  rating: number;
+}
+
 interface BookListProps {
   title: string;
   description: string;
   buttonText?: string;
   buttonLink?: string;
+  books: Book[]; // 🔥 Nhận danh sách sách từ props
 }
-const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY;
-const API_URL =
-  `https://www.googleapis.com/books/v1/volumes?q=s%C3%A1ch+m%E1%BB%9Bi+nh%E1%BA%A5t+vi%E1%BB%87t+nam&download=epub&langRestrict=vi&key=${API_KEY}`;
 
 const BookList: React.FC<BookListProps> = ({
   title,
   description,
   buttonText,
   buttonLink,
+  books,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const [books, setBooks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // 📡 Gọi API Google Books
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        // Define interface for book item
-        if (data.items) {
-          const formattedBooks = data.items.map((item: {
-            volumeInfo: {
-              imageLinks?: {
-                thumbnail?: string;
-              };
-              title?: string;
-            };
-          }) => ({
-            image:
-              item.volumeInfo.imageLinks?.thumbnail ||
-              "/default-book.jpg",
-            title: item.volumeInfo.title || "Không có tiêu đề",
-            category: item.volumeInfo.categories?.[0] || "Chưa phân loại",
-            highlight: item.volumeInfo.averageRating >= 4,
-          }));
-          setBooks(formattedBooks);
-        } else {
-          setBooks([]);
-        }
-      } catch (error) {
-        console.error("Lỗi khi gọi API Google Books:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBooks();
   }, []);
 
   return (
@@ -80,10 +48,8 @@ const BookList: React.FC<BookListProps> = ({
         <p className="text-gray-600 text-sm mt-2">{description}</p>
       </div>
 
-      {/* Hiển thị trạng thái loading */}
-      {loading ? (
-        <p className="text-center text-gray-500">Đang tải sách...</p>
-      ) : books.length === 0 ? (
+      {/* Hiển thị trạng thái nếu không có sách */}
+      {books.length === 0 ? (
         <p className="text-center text-red-500">Không tìm thấy sách nào.</p>
       ) : (
         <>
@@ -100,13 +66,17 @@ const BookList: React.FC<BookListProps> = ({
               }}
               className="pb-6"
             >
-              {books.map((book, index) => (
-                <SwiperSlide key={index}>
+              {books.map((book) => (
+                <SwiperSlide key={book.slug}>
+                  {" "}
+                  {/* 🔹 Thay vì `_id`, dùng `slug` */}
                   <BookCard
-                    image={book.image}
+                    key={book.slug} // ✅ Key chỉ để React nhận diện, không ảnh hưởng đến điều hướng
+                    image={book.coverImage || "/default-book.jpg"}
                     title={book.title}
-                    category={book.category}
-                    highlight={book.highlight}
+                    slug={book.slug} // ✅ Truyền slug vào để tạo link đúng
+                    category={book.series || "Chưa phân loại"}
+                    highlight={book.rating >= 4}
                   />
                 </SwiperSlide>
               ))}
@@ -114,13 +84,14 @@ const BookList: React.FC<BookListProps> = ({
           ) : (
             // 📌 Desktop: Hiển thị dạng lưới
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
-              {books.map((book, index) => (
+              {books.map((book) => (
                 <BookCard
-                  key={index}
-                  image={book.image}
+                  key={book.slug}
+                  image={book.coverImage || "/default-book.jpg"}
                   title={book.title}
-                  category={book.category}
-                  highlight={book.highlight}
+                  slug={book.slug}
+                  category={book.series || "Chưa phân loại"}
+                  highlight={book.rating >= 4}
                 />
               ))}
             </div>

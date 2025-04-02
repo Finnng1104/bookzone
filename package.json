@@ -9,9 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.1",
     "@react-pdf-viewer/core": "^3.12.0",
     "@react-pdf-viewer/default-layout": "^3.12.0",
     "@tanstack/react-query": "^5.70.0",
+    "axios": "^1.8.4",
+    "dotenv": "^16.4.7",
+    "js-cookie": "^3.0.5",
     "next": "15.2.4",
     "pdfjs-dist": "^3.4.120",
     "react": "^19.0.0",
@@ -21,6 +25,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
