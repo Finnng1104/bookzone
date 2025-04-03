@@ -9,6 +9,7 @@ const BASE_URL_LOGIN = process.env.NEXT_PUBLIC_LOGIN;
 const BASE_URL_REGISTER = process.env.NEXT_PUBLIC_REGISTER;
 const BASE_URL_EMAILDUBPLICATE = process.env.NEXT_PUBLIC_EMAILDUPLICATE;
 const BASE_URL_LOGIN_GOOGLE = process.env.NEXT_PUBLIC_LOGIN_GOOGLE;
+const BASE_URL_FORGOTPASSWORD = process.env.NEXT_PUBLIC_FORGOTPASSWORD;
 interface RegisterData {
   fullname: string;
   email: string; 
@@ -63,6 +64,16 @@ export const useGoogleLogin = () => {
     mutationFn: async (credential: string) => {
       const response = await handleGoogleLogin(credential); 
       return response.data; 
+    }
+  });
+}
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const response = await axios.post(`${BASE_URL_FORGOTPASSWORD}`, {
+        email: email, 
+      });
+      return response.data;
     }
   });
 }

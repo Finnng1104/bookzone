@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import InputField from "@/components/auth/InputField";
 
 const ResetPassword: React.FC = () => {
-  const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({otp: "", password: "", confirmPassword: "" });
   const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,6 +36,7 @@ const ResetPassword: React.FC = () => {
           <p className="text-gray-600 text-sm mb-4">Nhập mật khẩu mới để tiếp tục.</p>
           
           <form onSubmit={handleSubmit}>
+            <InputField label="Nhập OTP" type="text" name="otp" value={formData.otp} onChange={handleChange} />
             <InputField label="Mật khẩu mới" type="password" name="password" value={formData.password} onChange={handleChange} />
             <InputField label="Xác nhận mật khẩu" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
             
