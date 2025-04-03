@@ -9,11 +9,13 @@ import BookCard from "@/components/ui/BookCard";
 import Link from "next/link";
 
 interface Book {
-  slug: string; // 🔥 Thay vì `_id`, sử dụng `slug`
+  slug: string;
   title: string;
   coverImage: string;
   series: string;
   rating: number;
+  favorites?: number;
+  views?: number;
 }
 
 interface BookListProps {
@@ -21,7 +23,7 @@ interface BookListProps {
   description: string;
   buttonText?: string;
   buttonLink?: string;
-  books: Book[]; // 🔥 Nhận danh sách sách từ props
+  books: Book[];
 }
 
 const BookList: React.FC<BookListProps> = ({
@@ -42,18 +44,33 @@ const BookList: React.FC<BookListProps> = ({
 
   return (
     <div className="w-full xl:container mx-auto px-4 py-8">
-      {/* Tiêu đề danh sách sách */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">{title}</h2>
         <p className="text-gray-600 text-sm mt-2">{description}</p>
       </div>
 
-      {/* Hiển thị trạng thái nếu không có sách */}
       {books.length === 0 ? (
-        <p className="text-center text-red-500">Không tìm thấy sách nào.</p>
+        <div className="flex flex-col items-center justify-center text-center text-gray-500 mt-12 space-y-4">
+          <div className="text-5xl">📚</div>
+
+          <h3 className="text-xl font-semibold text-gray-700">
+            Không tìm thấy kết quả nào
+          </h3>
+
+          <p className="text-sm">
+            Có thể bạn đang tìm kiếm sai chính tả, hoặc sách chưa có trong hệ
+            thống.
+          </p>
+
+          <Link
+            href="/thu-vien-sach"
+            className="mt-2 inline-block px-5 py-2 bg-primary text-white rounded-full hover:bg-opacity-90 transition"
+          >
+            🔄 Xem tất cả sách
+          </Link>
+        </div>
       ) : (
         <>
-          {/* 📌 Mobile: Hiển thị Swiper (carousel) */}
           {isMobile ? (
             <Swiper
               modules={[Pagination]}
@@ -68,22 +85,22 @@ const BookList: React.FC<BookListProps> = ({
             >
               {books.map((book) => (
                 <SwiperSlide key={book.slug}>
-                  {" "}
-                  {/* 🔹 Thay vì `_id`, dùng `slug` */}
                   <BookCard
-                    key={book.slug} // ✅ Key chỉ để React nhận diện, không ảnh hưởng đến điều hướng
+                    key={book.slug}
                     image={book.coverImage || "/default-book.jpg"}
                     title={book.title}
-                    slug={book.slug} // ✅ Truyền slug vào để tạo link đúng
+                    slug={book.slug}
                     category={book.series || "Chưa phân loại"}
                     highlight={book.rating >= 4}
+                    favorites={book.favorites}
+                    views={book.views}
+                    rating={book.rating}
                   />
                 </SwiperSlide>
               ))}
             </Swiper>
           ) : (
-            // 📌 Desktop: Hiển thị dạng lưới
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
               {books.map((book) => (
                 <BookCard
                   key={book.slug}
@@ -92,6 +109,9 @@ const BookList: React.FC<BookListProps> = ({
                   slug={book.slug}
                   category={book.series || "Chưa phân loại"}
                   highlight={book.rating >= 4}
+                  favorites={book.favorites}
+                  views={book.views}
+                  rating={book.rating}
                 />
               ))}
             </div>
@@ -99,16 +119,15 @@ const BookList: React.FC<BookListProps> = ({
         </>
       )}
 
-      {/* 🔥 Nút XEM THÊM (nếu có props) */}
       {buttonText && buttonLink && (
-        <div className="flex justify-center mt-8">
-          <Link
-            href={buttonLink}
-            className="bg-pink-600 text-white font-semibold px-6 py-3 rounded-full hover:bg-pink-700 transition flex items-center space-x-2"
-          >
-            <span>📖 {buttonText}</span>
-          </Link>
-        </div>
+      <div className="flex justify-center mt-8">
+        <Link
+          href={buttonLink}
+          className="bg-secondary text-white font-semibold px-6 py-3 rounded-full transition flex items-center space-x-2 hover:bg-[#D13D35]"
+        >
+          <span>📖 {buttonText}</span>
+        </Link>
+      </div>
       )}
     </div>
   );

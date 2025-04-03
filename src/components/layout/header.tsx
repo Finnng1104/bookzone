@@ -1,57 +1,39 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { FaSearch, FaHeart, FaBars, FaPhone, FaEnvelope, FaClock, FaComments, FaUser, FaTimes, FaHeadset } from "react-icons/fa";
-import Cookies from "js-cookie"; 
-
-
-
+import { useState } from "react";
+import {
+  FaSearch,
+  FaHeart,
+  FaBars,
+  FaPhone,
+  FaEnvelope,
+  FaClock,
+  FaComments,
+  FaUser,
+  FaTimes,
+  FaHeadset,
+  FaChevronDown,
+} from "react-icons/fa";
 
 const Header = () => {
   const [search, setSearch] = useState("");
+  const [searchType, setSearchType] = useState<"title" | "author">("title");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [user, setUser] = useState<{ email?: string; fullname?: string } | null>(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false); // State cho dropdown
 
-  useEffect(() => {
-    const userCookie = Cookies.get("user");
-    console.log(userCookie); 
-    
-    if (userCookie) {
-      setUser(JSON.parse(userCookie)); 
-      console.log(setUser(JSON.parse(userCookie)));
-      
-    }
-  }, []);
-  const handleLogout = () => {
-    Cookies.remove("user");
-    setUser(null); 
+  const handleSearch = () => {
+    if (!search.trim()) return;
+    const query = encodeURIComponent(search.trim());
+    window.location.href = `/thu-vien-sach?type=${searchType}&q=${query}`;
   };
-  // 🔹 Xử lý ẩn/hiện Header khi cuộn trang
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > lastScrollY && window.scrollY > 50) {
-        setIsVisible(false); // Ẩn Header khi cuộn xuống
-      } else {
-        setIsVisible(true); // Hiện Header khi cuộn lên
-      }
-      setLastScrollY(window.scrollY);
-    };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") handleSearch();
+  };
 
   return (
-    <header className={`fixed top-0 z-50 left-0 right-0 bg-white text-black shadow-md transition-transform duration-300 z-50 ${isVisible ? "translate-y-0" : "-translate-y-full"}`}>
-      {/* 🔹 Thanh thông tin liên hệ */}
+    <header className="bg-white text-black relative">
       <div className="bg-primary text-white text-sm py-2">
         <div className="w-full xl:container mx-auto flex justify-between px-4 flex-wrap">
-          {/* 🔸 Thông tin liên hệ */}
           <div className="flex space-x-4 hidden md:flex">
             <span className="flex items-center space-x-2">
               <FaPhone size={14} /> <span>+208-666-0112</span>
@@ -64,95 +46,160 @@ const Header = () => {
             </span>
           </div>
 
-          {/* 🔸 Hỗ trợ & Live Chat */}
           <div className="flex space-x-4">
-            <Link href="/support" className="flex items-center space-x-2 hover:text-opacity-80">
+            <Link
+              href="/support"
+              className="flex items-center space-x-2 hover:text-opacity-80"
+            >
               <FaHeadset size={14} /> <span>Hỗ trợ</span>
             </Link>
-            <Link href="/live-chat" className="flex items-center space-x-2 hover:text-opacity-80 hidden sm:flex">
+            <Link
+              href="/live-chat"
+              className="flex items-center space-x-2 hover:text-opacity-80 hidden sm:flex"
+            >
               <FaComments size={14} /> <span>Live Chat</span>
             </Link>
           </div>
         </div>
       </div>
 
-      {/* 🔹 Main Header */}
       <div className="w-full xl:container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* 🔸 Logo */}
-        <Link href="/" className="text-xl md:text-2xl font-bold text-primary">BOOKZONE</Link>
+        <Link href="/" className="text-xl md:text-2xl font-bold text-primary">
+          BOOKZONE
+        </Link>
 
-        {/* 🔸 Navbar - Desktop */}
         <nav className="hidden lg:flex flex-grow justify-center space-x-8">
-          <Link href="/" className="text-primary hover:text-opacity-80 font-medium">Trang chủ</Link>
-          <Link href="/thu-vien-sach" className="text-primary hover:text-opacity-80 font-medium">Thư viện sách</Link>
-          <Link href="/bai-viet" className="text-primary hover:text-opacity-80 font-medium">Bài viết</Link>
-          <Link href="/lien-he" className="text-primary hover:text-opacity-80 font-medium">Liên hệ</Link>
+          <Link
+            href="/"
+            className="text-primary hover:text-opacity-80 font-medium"
+          >
+            Trang chủ
+          </Link>
+          <Link
+            href="/thu-vien-sach"
+            className="text-primary hover:text-opacity-80 font-medium"
+          >
+            Thư viện sách
+          </Link>
+          <Link
+            href="/bai-viet"
+            className="text-primary hover:text-opacity-80 font-medium"
+          >
+            Bài viết
+          </Link>
+          <Link
+            href="/lien-he"
+            className="text-primary hover:text-opacity-80 font-medium"
+          >
+            Liên hệ
+          </Link>
         </nav>
 
-        {/* 🔸 Thanh tìm kiếm */}
-        <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full px-4 py-2 w-1/3 shadow-sm">
+        <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full w-1/3 h-[42px] shadow-sm relative overflow-hidden">
+          <div className="relative h-full">
+            <select
+              className="w-28 h-full pl-4 pr-6 text-sm text-gray-700 bg-transparent outline-none appearance-none border-r border-gray-300"
+              value={searchType}
+              onChange={(e) =>
+                setSearchType(e.target.value as "title" | "author")
+              }
+            >
+              <option value="title">Tên sách</option>
+              <option value="author">Tác giả</option>
+            </select>
+            <div className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
+              <FaChevronDown size={12} />
+            </div>
+          </div>
+
           <input
             type="text"
-            placeholder="Tìm kiếm sách, tác giả..."
-            className="flex-1 outline-none bg-transparent text-gray-700 text-sm"
+            placeholder={`Tìm theo ${
+              searchType === "title" ? "tên sách" : "tác giả"
+            }...`}
+            className="flex-1 px-3 outline-none bg-transparent text-gray-700 text-sm h-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
-          <button className="text-primary hover:text-opacity-80">
+
+          <button
+            className="text-primary hover:text-opacity-80 flex items-center justify-center h-full px-4"
+            onClick={handleSearch}
+          >
             <FaSearch size={16} />
           </button>
         </div>
 
-        {/* 🔸 Icons & Mobile Menu Button */}
         <div className="flex items-center space-x-4 md:space-x-6">
-          {/* Search Icon - Mobile */}
           <button className="md:hidden text-primary hover:text-opacity-80">
             <FaSearch size={20} />
           </button>
-
-          <Link href="/favorites" className="text-primary hover:text-opacity-80 hidden sm:block">
+          <Link
+            href="/favorites"
+            className="text-primary hover:text-opacity-80 hidden sm:block"
+          >
             <FaHeart size={20} />
           </Link>
-          {user ? (
-            <div className="relative">
-              {/* User icon */}
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-2 text-primary hover:text-opacity-80"
-              >
-                <FaUser size={20} />
-                <span className="hidden md:inline-block">{user.email}</span>
-              </button>
-
-              {/* Dropdown menu */}
-              {dropdownOpen && (
-                <div
-                  className="absolute right-0 mt-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg"
-                  onMouseLeave={() => setDropdownOpen(false)} // Ẩn dropdown khi rời chuột
-                >
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link href="/login" className="text-primary hover:text-opacity-80">
-              <FaUser size={20} />
-            </Link>
-          )}
-          
-
-          {/* Mobile Menu Button */}
+          <Link href="/login" className="text-primary hover:text-opacity-80">
+            <FaUser size={20} />
+          </Link>
           <button
             className="lg:hidden text-primary hover:text-opacity-80"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             {isMobileMenuOpen ? <FaTimes size={20} /> : <FaBars size={20} />}
           </button>
+        </div>
+      </div>
+
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+          isMobileMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className={`absolute right-0 top-0 h-full w-64 bg-white transform transition-transform duration-300 ${
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
+          <div className="p-5">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-primary">Menu</h2>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-gray-500 hover:text-primary"
+              >
+                <FaTimes size={24} />
+              </button>
+            </div>
+            <nav className="flex flex-col space-y-4">
+              <Link
+                href="/"
+                className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100"
+              >
+                Trang chủ
+              </Link>
+              <Link
+                href="/thu-vien-sach"
+                className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100"
+              >
+                Thư viện sách
+              </Link>
+              <Link
+                href="/bai-viet"
+                className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100"
+              >
+                Bài viết
+              </Link>
+              <Link
+                href="/lien-he"
+                className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100"
+              >
+                Liên hệ
+              </Link>
+            </nav>
+          </div>
         </div>
       </div>
     </header>

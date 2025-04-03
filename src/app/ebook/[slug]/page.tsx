@@ -1,19 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation"; // ✅ Dùng useParams() thay vì useRouter().query
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaHeart, FaBookOpen } from "react-icons/fa";
 
 const BookDetail = () => {
-  const { slug } = useParams(); // ✅ Lấy slug từ URL đúng cách
+  const { slug } = useParams();
   const [book, setBook] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const handleDownload = () => {
     if (book?.formats?.pdf) {
-      window.open(book.formats.pdf, "_blank"); // Mở link tải xuống
+      window.open(book.formats.pdf, "_blank"); 
     } else {
       alert("Không tìm thấy file PDF để tải!");
     }
@@ -21,7 +21,7 @@ const BookDetail = () => {
 
 
   useEffect(() => {
-    if (!slug) return; // Nếu chưa có slug, không gọi API
+    if (!slug) return; 
 
     const fetchBook = async () => {
       try {
