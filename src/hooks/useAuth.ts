@@ -2,7 +2,7 @@
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import dotenv from "dotenv"; 
-import { GoogleLogin } from "@react-oauth/google";
+// import { GoogleLogin } from "@react-oauth/google";
 
 dotenv.config(); 
 const BASE_URL_LOGIN = process.env.NEXT_PUBLIC_LOGIN; 
@@ -10,6 +10,7 @@ const BASE_URL_REGISTER = process.env.NEXT_PUBLIC_REGISTER;
 // const BASE_URL_EMAILDUBPLICATE = process.env.NEXT_PUBLIC_EMAILDUPLICATE;
 const BASE_URL_LOGIN_GOOGLE = process.env.NEXT_PUBLIC_LOGIN_GOOGLE;
 const BASE_URL_FORGOTPASSWORD = process.env.NEXT_PUBLIC_FORGOTPASSWORD;
+const BASE_URL_CHANGE_PASSWORD = process.env.NEXT_PUBLIC_CHANGEPASSWORD
 interface RegisterData {
   fullname: string;
   email: string; 
@@ -20,6 +21,16 @@ interface LoginData {
   email: string;
   password: string;
   fullname?: string;
+}
+
+interface ChangePasswordPayload {
+  otp: string;
+  newPassword: string;
+}
+
+interface ChangePasswordResponse {
+  status: boolean;
+  message: string;
 }
 export const useRegister = () => {
   return useMutation({
@@ -37,11 +48,13 @@ export const useRegister = () => {
 export const useLogin = () => {
   return useMutation({
     mutationFn: async (data: LoginData) => {
-      const response = await axios.post(`${BASE_URL_LOGIN}`, data);; 
+      const response = await axios.post(`${BASE_URL_LOGIN}`, data, {
+        withCredentials: true, 
+      });
       return response.data;
-    }
+    },
   });
-}
+};
 // export const checkmailduplicate = async (email: string) => {
 //   try {
 //     console.log("Email being sent:", email);
@@ -87,3 +100,28 @@ export const useForgotPassword = () => {
     }
   });
 }
+export const useChangePassword = () => {
+  return useMutation<ChangePasswordResponse, Error, ChangePasswordPayload>({
+    mutationFn: async (data: ChangePasswordPayload) => {
+      const response = await axios.put(`${BASE_URL_CHANGE_PASSWORD}`, data, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      alert(data.message || "Đổi mật khẩu thành công!");
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      if (error.response) {
+        const msg = error.response.data?.message || "Có lỗi xảy ra";
+        alert(`❌ ${msg}`);
+      } else if (error.request) {
+        alert("⚠️ Không nhận được phản hồi từ server. Vui lòng kiểm tra mạng.");
+      } else {
+        alert("❌ Đã xảy ra lỗi khi gửi yêu cầu: " + error.message);
+      }
+    },
+  });
+};
+
