@@ -34,15 +34,25 @@ class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await UserModel.findOne({ email });
+    const user = await UserModel.findOne({ email }).select("fullname email password role");
+  
     if (!user) return { status: false, message: "Email không tồn tại" };
-
+  
     const match = await bcrypt.compare(password, user.password || "");
     if (!match) throw new Error("Mật khẩu không đúng");
-
-    const access_token = jwt.generalAccessToken({ id: user._id.toString(), email: user.email });
-    const refresh_token = jwt.generalRefreshToken({ id: user._id.toString(), email: user.email });
-
+  
+    const access_token = jwt.generalAccessToken({
+      id: user._id.toString(),
+      email: user.email,
+      isAdmin: user.role === "admin", 
+    });
+  
+    const refresh_token = jwt.generalRefreshToken({
+      id: user._id.toString(),
+      email: user.email,
+      isAdmin: user.role === "admin", 
+    });
+  
     return {
       access_token,
       refresh_token,
@@ -50,9 +60,11 @@ class AuthService {
         id: user._id,
         fullname: user.fullname,
         email: user.email,
+        role: user.role,
       },
     };
   }
+  
 
   async forgotPassword(email: string) {
     const user = await UserModel.findOne({ email });
