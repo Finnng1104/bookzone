@@ -8,33 +8,76 @@ import { useChangePassword } from "@/hooks/useAuth";
 const ResetPassword: React.FC = () => {
   const [formData, setFormData] = useState({
     otp: "",
-    password: "",
+    newPassword: "",
     confirmPassword: "",
   });
+
+  const [errors, setErrors] = useState({
+    otp: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [message, setMessage] = useState("");  
+
   const router = useRouter();
-  const { mutate, status } = useChangePassword();  // Get status from useChangePassword
+  const { mutate, status } = useChangePassword();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("❌ Mật khẩu không khớp. Vui lòng thử lại.");
-      return;
+  const validateForm = () => {
+    const formErrors = { otp: "", newPassword: "", confirmPassword: "" };
+    let isValid = true;
+
+    // Kiểm tra nếu có trường nào còn thiếu
+    if (!formData.otp) {
+      formErrors.otp = "❌ OTP là bắt buộc.";
+      isValid = false;
     }
 
-    // Call the mutation to change password
-    mutate(
-      { otp: formData.otp, newPassword: formData.password },
-      {
-        onSuccess: (data) => {
-          alert(`✅ ${data.message || "Đổi mật khẩu thành công!"}`);
-          router.push("/login");
-        },
+    if (!formData.newPassword) {
+      formErrors.newPassword = "❌ Mật khẩu mới là bắt buộc.";
+      isValid = false;
+    } else if (formData.newPassword.length < 8) {
+      formErrors.newPassword = "❌ Mật khẩu mới phải có ít nhất 8 ký tự.";
+      isValid = false;
+    }
+
+    // Kiểm tra mật khẩu xác nhận có khớp với mật khẩu mới không
+    if (formData.newPassword !== formData.confirmPassword) {
+      formErrors.confirmPassword = "❌ Mật khẩu không khớp.";
+      isValid = false;
+    }
+
+    setErrors(formErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    // Kiểm tra form
+    if (!validateForm()) return;
+  
+    // Gọi API đổi mật khẩu
+    mutate({ otp: formData.otp, newPassword: formData.newPassword }, {
+      onSuccess: (data) => {
+        if (data.status) {
+          setMessage(`✅ ${data.message || "Đổi mật khẩu thành công!"}`);
+          setTimeout(() => router.push("/login"), 2000); // Chuyển hướng sau 2 giây
+        } else {
+          // Nếu status là false thì là lỗi, hiển thị thông báo lỗi
+          setMessage(`❌ ${data.message || "Có lỗi xảy ra!"}`);
+        }
+      },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      onError: (error: any) => {
+        // Xử lý lỗi chung
+        setMessage(`❌ ${error.message || "Có lỗi xảy ra!"}`);
       }
-    );
+    });
   };
 
   return (
@@ -53,6 +96,12 @@ const ResetPassword: React.FC = () => {
             Nhập mật khẩu mới để tiếp tục.
           </p>
 
+          {message && (
+            <p className={`text-sm ${message.startsWith("❌") ? "text-red-500" : "text-green-500"} mb-4`}>
+              {message}
+            </p>
+          )}
+
           <form onSubmit={handleSubmit}>
             <InputField
               label="Nhập OTP"
@@ -61,13 +110,17 @@ const ResetPassword: React.FC = () => {
               value={formData.otp}
               onChange={handleChange}
             />
+            {errors.otp && <p className="text-red-500 text-sm">{errors.otp}</p>}
+
             <InputField
               label="Mật khẩu mới"
               type="password"
-              name="password"
-              value={formData.password}
+              name="newPassword"
+              value={formData.newPassword}
               onChange={handleChange}
             />
+            {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword}</p>}
+
             <InputField
               label="Xác nhận mật khẩu"
               type="password"
@@ -75,13 +128,14 @@ const ResetPassword: React.FC = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
 
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-3 rounded-lg mt-4 hover:bg-blue-600 transition-all"
-              disabled={status === "pending"}  // Use "pending" instead of "loading"
+              disabled={status === "pending"}
             >
-              {status === "pending" ? "Đang xử lý..." : "Xác Nhận"}  {/* Use "pending" status */}
+              {status === "pending" ? "Đang xử lý..." : "Xác Nhận"}
             </button>
           </form>
         </div>

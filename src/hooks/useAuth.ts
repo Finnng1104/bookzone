@@ -103,24 +103,14 @@ export const useForgotPassword = () => {
 export const useChangePassword = () => {
   return useMutation<ChangePasswordResponse, Error, ChangePasswordPayload>({
     mutationFn: async (data: ChangePasswordPayload) => {
+      console.log("Sending data to API:", data);  // Log the data being sent to the server
       const response = await axios.put(`${BASE_URL_CHANGE_PASSWORD}`, data, {
         withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       return response.data;
-    },
-    onSuccess: (data) => {
-      alert(data.message || "Đổi mật khẩu thành công!");
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (error: any) => {
-      if (error.response) {
-        const msg = error.response.data?.message || "Có lỗi xảy ra";
-        alert(`❌ ${msg}`);
-      } else if (error.request) {
-        alert("⚠️ Không nhận được phản hồi từ server. Vui lòng kiểm tra mạng.");
-      } else {
-        alert("❌ Đã xảy ra lỗi khi gửi yêu cầu: " + error.message);
-      }
     },
   });
 };
