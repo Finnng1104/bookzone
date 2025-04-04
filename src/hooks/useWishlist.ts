@@ -2,15 +2,16 @@
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import dotenv from "dotenv";
-import Cookies from 'js-cookie';
+axios.defaults.withCredentials = true;
+
 dotenv.config();
 const BASE_URL_POST_WISHLIST = process.env.NEXT_PUBLIC_POSTWISHLIST;
 const BASE_URL_GET_WISHLIST = process.env.NEXT_PUBLIC_GETWISHLIST;
 const BASE_URL_DELETE_WISHLIST = process.env.NEXT_PUBLIC_DELETEWISHLIST;
 interface WishlistData {
     id: string;
-    bookId: string;
     userId: string;
+    bookIds: string[];
 }
 interface WishlistResponse {
     message: string;
@@ -22,7 +23,7 @@ export const usePostWishlist = () => {
             const response = await axios.post(`${BASE_URL_POST_WISHLIST}`, data, {
                 headers: {
                     'Content-Type': 'application/json',
-                    authorization: "Bearer " + Cookies.get("access_token"),
+                    withCredentials: true,
                 },
             });
             return response.data;
@@ -35,7 +36,7 @@ export const useGetWishlist = () => {
             const response = await axios.get(`${BASE_URL_GET_WISHLIST}`, {
                 headers: {
                     'Content-Type': 'application/json',
-                    authorization: "Bearer " + Cookies.get("access_token"),
+                    withCredentials: true,
                 },
             });
             return response.data;
@@ -48,7 +49,6 @@ export const useDeleteWishlist = () => {
             const response = await axios.delete(`${BASE_URL_DELETE_WISHLIST}/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
-                    authorization: "Bearer " + Cookies.get("access_token"),
                 },
             });
             return response.data;

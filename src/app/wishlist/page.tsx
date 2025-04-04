@@ -4,13 +4,17 @@ import BookCard from '@/components/wishlist/BookCard';
 import Sidebar from '@/components/wishlist/SideBarSection';
 import { useGetWishlist } from '@/hooks/useWishlist';
 import { useEffect, useState } from 'react';
-
+import Cookies from 'js-cookie';
+import dotenv from 'dotenv';  
+import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 interface Book {
   id: number;
   title: string;
   image: string;
 }
+
 
 const Wishlist = () => {
   // const [books, setBooks] = useState<Book[]>([
@@ -40,6 +44,7 @@ const Wishlist = () => {
   const {mutateAsync: getBooks } = useGetWishlist();
   const fetchBooks = async () => {
     try {
+    
       const response = await getBooks();
       setBooks(response.data); 
       console.log("Fetched books:", response.data);

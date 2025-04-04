@@ -7,10 +7,13 @@ import Link from "next/link";
 import { FaHeart, FaBookOpen } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { usePostWishlist } from "@/hooks/useWishlist";
-s
+import Cookies from "js-cookie";
+import axios from "axios";
+axios.defaults.withCredentials = true;
+
 const BookDetail = () => {
   const router = useRouter();
-  const { mutationAsync: postwishlist } = usePostWishlist();
+  const { mutateAsync: postwishlist } = usePostWishlist();
   const { slug } = useParams();
   const [book, setBook] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -25,7 +28,8 @@ const BookDetail = () => {
       try {
         const res = await fetch(`http://localhost:8080/api/books/slug/${slug}`);
         const data = await res.json();
-
+        console.log("Book data:", data); 
+        
         if (res.ok && data.success && data.data) {
           setBook(data.data);
         } else {
@@ -69,7 +73,24 @@ const BookDetail = () => {
     router.push("/wishlist")
     setIsFavorite(!isFavorite);
     try {
-      const response = await postwishlist(book._id);
+      const user = Cookies.get("user");
+      console.log("user:", user); 
+      if (isFavorite) {
+        alert("Sách đã có trong danh sách yêu thích!");
+        return;
+      }    
+      if (!user) {
+        alert("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
+        router.push("/login");
+        return;
+      }
+      const response = await postwishlist({
+        bookId: book._id,
+        headers: {
+          credentials: "include"
+        },
+      });
+  
       if (response) {
         alert("Đã thêm vào danh sách yêu thích!");
         setIsFavorite(true);

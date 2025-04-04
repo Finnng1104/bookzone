@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaSearch,
   FaHeart,
@@ -14,11 +14,15 @@ import {
   FaHeadset,
   FaChevronDown,
 } from "react-icons/fa";
-
+import Cookies from "js-cookie";
+import Image from "next/image";
 const Header = () => {
+
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState<"title" | "author">("title");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<{ email?: string; fullname?: string } | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false); // State cho dropdown
 
   const handleSearch = () => {
     if (!search.trim()) return;
@@ -29,7 +33,19 @@ const Header = () => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleSearch();
   };
+  useEffect( () => {
+    const userCookie = Cookies.get("user");
+    if (userCookie) {
+      const userData = JSON.parse(userCookie);
+      console.log("userData", userData);
+      setUser(userData);
+    }
+  }, []);
+  const handleLogout = () => {
+    Cookies.remove("user");
+    setUser(null);
 
+  }
   return (
     <header className="bg-white text-black relative">
       <div className="bg-primary text-white text-sm py-2">
@@ -141,9 +157,39 @@ const Header = () => {
           >
             <FaHeart size={20} />
           </Link>
-          <Link href="/login" className="text-primary hover:text-opacity-80">
-            <FaUser size={20} />
-          </Link>
+         
+          {user ? (
+            <div className="relative">
+              {/* User icon */}
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="flex items-center space-x-2 text-primary hover:text-opacity-80"
+              >
+                <Image src={user.avatar} alt="User profile picture" width={40} height={40} />
+                <span className="hidden md:inline-block">{user.fullname}</span>
+              </button>
+
+              {/* Dropdown menu */}
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg"
+                  onMouseLeave={() => setDropdownOpen(false)} 
+                >
+                  <button
+                    onClick={handleLogout}
+                    className="relative block w-full text-left px-2 py-2 text-sm text-gray-700 hover:bg-gray-100 z-50"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link href="/login" className="text-primary hover:text-opacity-80">
+              <FaUser size={20} />
+            </Link>
+          )}
+
           <button
             className="lg:hidden text-primary hover:text-opacity-80"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
