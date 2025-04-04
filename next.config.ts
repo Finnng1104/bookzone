@@ -10,6 +10,10 @@ const nextConfig = {
         protocol: "http",
         hostname: "books.google.com",
       },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com", 
+      },
     ],
   },
   webpack: (config: { externals: unknown[] }, { isServer }: { isServer: boolean }) => {

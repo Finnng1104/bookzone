@@ -6,6 +6,8 @@ import Footer from "@/components/layout/footer/Footer";
 import BackToTop from "@/components/ui/BackToTop";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+const queryClient = new QueryClient();
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -18,12 +20,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="vi">
-      <body className="min-h-screen flex flex-col bg-white text-gray-900">
+       <QueryClientProvider client={queryClient}>
+       <body className="min-h-screen flex flex-col bg-white text-gray-900">
         {!isAuthPage && <Header />}
         <main className="flex-grow">{children}</main>
         {!isAuthPage && <Footer />}
         {!isAuthPage && <BackToTop />}
       </body>
+       </QueryClientProvider>
+      
     </html>
   );
 }

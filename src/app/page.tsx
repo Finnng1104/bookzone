@@ -13,8 +13,19 @@ const getBooks = async () => {
   return json.data;
 };
 
+const getHotBooks = async () => {
+  const res = await fetch("http://localhost:8080/api/books/category/Hot?limit=12", {
+    cache: "no-store",
+  });
+  const json = await res.json();
+
+  return json.data;
+};
+
+
 const Home = async () => {
   const books = await getBooks();
+  const hotbooks = await getHotBooks();
 
   return (
     <>
@@ -28,7 +39,7 @@ const Home = async () => {
         description="Tổng hợp những eBook tải về nhiều nhất trong tháng."
         buttonText="Xem thêm EBOOK HOT"
         buttonLink="/thu-vien-sach"
-        books={books}
+        books={hotbooks}
       />
 
       <BookList

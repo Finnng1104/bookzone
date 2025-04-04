@@ -60,9 +60,9 @@ const LoginForm: React.FC = () => {
           password: formData.password,
         });
 
-        const { user, refresh_token } = loginResponse;
+        const { user, access_token } = loginResponse;
         Cookies.set("user", JSON.stringify(user), { expires: 7 });
-        Cookies.set("refresh_token", refresh_token, { expires: 7 });
+        Cookies.set("access_token", access_token, { expires: 7 });
         setIsSuccess(true);
         router.push("/");
       } catch {
@@ -75,7 +75,8 @@ const LoginForm: React.FC = () => {
     try {
       const credential = response.credential;
       if (!credential) return;
-
+      console.log("credential:", credential);
+      
       const data = await handleGoogleLogin(credential);
       Cookies.set("user", JSON.stringify(data.user));
       Cookies.set("refresh_token", data.refresh_token);
