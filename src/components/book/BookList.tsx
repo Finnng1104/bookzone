@@ -16,6 +16,7 @@ interface Book {
   rating: number;
   favorites?: number;
   views?: number;
+  category?: string[];
 }
 
 interface BookListProps {
@@ -99,7 +100,7 @@ const BookList: React.FC<BookListProps> = ({
                       image={book.coverImage || "/default-book.jpg"}
                       title={book.title}
                       slug={book.slug}
-                      category={book.series || "Chưa phân loại"}
+                      category={book.category || ["Chưa phân loại"]}
                       highlight={book.rating >= 4}
                       favorites={book.favorites}
                       views={book.views}
@@ -119,7 +120,7 @@ const BookList: React.FC<BookListProps> = ({
                   image={book.coverImage || "/default-book.jpg"}
                   title={book.title}
                   slug={book.slug}
-                  category={book.series || "Chưa phân loại"}
+                  category={book.category || ["Chưa phân loại"]}
                   highlight={book.rating >= 4}
                   favorites={book.favorites}
                   views={book.views}

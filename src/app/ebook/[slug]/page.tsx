@@ -5,14 +5,15 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaHeart, FaBookOpen } from "react-icons/fa";
+import { IBook } from "@/types/book.interface";
+import RelatedBooks from "@/components/ui/RelatedBooks";
 
 const BookDetail = () => {
   const { slug } = useParams();
-  const [book, setBook] = useState<any>(null);
+  const [book, setBook] = useState<IBook | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // 👉 Tải dữ liệu sách
   useEffect(() => {
     if (!slug) return;
 
@@ -49,7 +50,6 @@ const BookDetail = () => {
     setIsFavorite(!isFavorite);
   };
 
-  // 👉 Loading
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
@@ -59,7 +59,6 @@ const BookDetail = () => {
     );
   }
 
-  // 👉 Nếu không có sách
   if (!book) {
     return (
       <p className="text-center text-red-500 py-10">Không tìm thấy sách!</p>
@@ -68,9 +67,7 @@ const BookDetail = () => {
 
   return (
     <div className="w-full lg:container mx-auto px-4 py-8">
-      {/* Ảnh + Thông tin */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Ảnh bìa */}
         <div className="col-span-1 flex justify-center">
           <Image
             src={book.coverImage || "/images/default-book-cover.jpg"}
@@ -83,7 +80,6 @@ const BookDetail = () => {
           />
         </div>
 
-        {/* Thông tin sách */}
         <div className="col-span-2">
           <h1 className="text-2xl font-bold">{book.title}</h1>
           <p className="text-gray-500 text-sm mt-1">
@@ -114,7 +110,6 @@ const BookDetail = () => {
             )}
           </div>
 
-          {/* Nút hành động */}
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
               href={book.formats?.pdf ? `/doc-sach/${slug}` : "#"}
@@ -153,7 +148,6 @@ const BookDetail = () => {
         </div>
       </div>
 
-      {/* Mô tả */}
       <div className="mt-12 bg-gray-100 rounded-lg p-6">
         <h3 className="font-semibold text-lg bg-gray-200 px-4 py-2 rounded-t-lg">
           Mô tả
@@ -163,7 +157,6 @@ const BookDetail = () => {
         </div>
       </div>
 
-      {/* Giới thiệu tác giả */}
       <div className="mt-12">
         <h2 className="text-xl font-bold">✍️ Giới thiệu tác giả</h2>
         <p className="text-gray-700 mt-2">
@@ -171,6 +164,9 @@ const BookDetail = () => {
           nổi tiếng với nhiều tác phẩm được yêu thích.
         </p>
       </div>
+      {book.category && book.category.length > 0 && (
+      <RelatedBooks category={book.category[0]} />
+    )}
     </div>
   );
 };
