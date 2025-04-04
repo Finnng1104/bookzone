@@ -19,6 +19,7 @@ const ResetPassword: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert("❌ Mật khẩu không khớp. Vui lòng thử lại.");
