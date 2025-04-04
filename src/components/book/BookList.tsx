@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -34,6 +34,7 @@ const BookList: React.FC<BookListProps> = ({
   books,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const paginationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -52,16 +53,13 @@ const BookList: React.FC<BookListProps> = ({
       {books.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center text-gray-500 mt-12 space-y-4">
           <div className="text-5xl">📚</div>
-
           <h3 className="text-xl font-semibold text-gray-700">
             Không tìm thấy kết quả nào
           </h3>
-
           <p className="text-sm">
             Có thể bạn đang tìm kiếm sai chính tả, hoặc sách chưa có trong hệ
             thống.
           </p>
-
           <Link
             href="/thu-vien-sach"
             className="mt-2 inline-block px-5 py-2 bg-primary text-white rounded-full hover:bg-opacity-90 transition"
@@ -72,35 +70,49 @@ const BookList: React.FC<BookListProps> = ({
       ) : (
         <>
           {isMobile ? (
-            <Swiper
-              modules={[Pagination]}
-              slidesPerView={2}
-              spaceBetween={16}
-              pagination={{ clickable: true }}
-              breakpoints={{
-                320: { slidesPerView: 1 },
-                480: { slidesPerView: 2 },
-              }}
-              className="pb-6"
-            >
-              {books.map((book) => (
-                <SwiperSlide key={book.slug}>
-                  <BookCard
-                    key={book.slug}
-                    image={book.coverImage || "/default-book.jpg"}
-                    title={book.title}
-                    slug={book.slug}
-                    category={book.series || "Chưa phân loại"}
-                    highlight={book.rating >= 4}
-                    favorites={book.favorites}
-                    views={book.views}
-                    rating={book.rating}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
+            <>
+              <Swiper
+                modules={[Pagination]}
+                slidesPerView={2}
+                spaceBetween={16}
+                pagination={{
+                  clickable: true,
+                  el: paginationRef.current,
+                }}
+                onSwiper={(swiper) => {
+                  if (swiper.params.pagination && typeof swiper.params.pagination !== "boolean") {
+                    swiper.params.pagination.el = paginationRef.current;
+                    swiper.pagination.init();
+                    swiper.pagination.update();
+                  }
+                }}
+                breakpoints={{
+                  320: { slidesPerView: 1 },
+                  480: { slidesPerView: 2 },
+                }}
+                className="pb-4"
+              >
+                {books.map((book) => (
+                  <SwiperSlide key={book.slug}>
+                    <BookCard
+                      key={book.slug}
+                      image={book.coverImage || "/default-book.jpg"}
+                      title={book.title}
+                      slug={book.slug}
+                      category={book.series || "Chưa phân loại"}
+                      highlight={book.rating >= 4}
+                      favorites={book.favorites}
+                      views={book.views}
+                      rating={book.rating}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              <div ref={paginationRef} className="flex justify-center mt-4"></div>
+            </>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
               {books.map((book) => (
                 <BookCard
                   key={book.slug}
@@ -120,14 +132,14 @@ const BookList: React.FC<BookListProps> = ({
       )}
 
       {buttonText && buttonLink && (
-      <div className="flex justify-center mt-8">
-        <Link
-          href={buttonLink}
-          className="bg-secondary text-white font-semibold px-6 py-3 rounded-full transition flex items-center space-x-2 hover:bg-[#D13D35]"
-        >
-          <span>📖 {buttonText}</span>
-        </Link>
-      </div>
+        <div className="flex justify-center mt-8">
+          <Link
+            href={buttonLink}
+            className="bg-secondary text-white font-semibold px-6 py-3 rounded-full transition flex items-center space-x-2 hover:bg-[#D13D35]"
+          >
+            <span>📖 {buttonText}</span>
+          </Link>
+        </div>
       )}
     </div>
   );

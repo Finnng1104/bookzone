@@ -92,52 +92,54 @@ const BookLibrary = () => {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-center">
-            {selectedBooks.map((book) => (
-              <BookCard
-                key={book._id}
-                image={book.coverImage || "/default-book.jpg"}
-                title={book.title}
-                category={book.category?.join(", ") || "Chưa phân loại"}
-                views={book.views}
-                favorites={book.favorites}
-                rating={book.rating}
-                slug={book.slug}
-              />
-            ))}
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-6 justify-items-center">
+      {selectedBooks.map((book) => (
+        <BookCard
+          key={book._id}
+          image={book.coverImage || "/default-book.jpg"}
+          title={book.title}
+          slug={book.slug}
+          category={Array.isArray(book.category) ? book.category.join(", ") : "Chưa phân loại"}
+          highlight={book.rating >= 4}
+          favorites={book.favorites}
+          views={book.views}
+          rating={book.rating}
+        />
+      ))}
+    </div>
 
-          <div className="flex justify-center mt-8 space-x-2">
-            <button
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-            >
-              ← Trước
-            </button>
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                className={`px-4 py-2 rounded-md ${
-                  currentPage === index + 1
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                } transition`}
-                onClick={() => setCurrentPage(index + 1)}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
-              onClick={() =>
-                setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev))
-              }
-              disabled={currentPage === totalPages}
-            >
-              Tiếp →
-            </button>
-          </div>
+    {/* Pagination giữ nguyên */}
+    <div className="flex justify-center mt-8 space-x-2">
+      <button
+        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+      >
+        ← Trước
+      </button>
+      {[...Array(totalPages)].map((_, index) => (
+        <button
+          key={index}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === index + 1
+              ? "bg-blue-600 text-white"
+              : "bg-gray-200 hover:bg-gray-300"
+          } transition`}
+          onClick={() => setCurrentPage(index + 1)}
+        >
+          {index + 1}
+        </button>
+      ))}
+      <button
+        className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"
+        onClick={() =>
+          setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev))
+        }
+        disabled={currentPage === totalPages}
+      >
+        Tiếp →
+      </button>
+    </div>
         </>
       )}
     </div>

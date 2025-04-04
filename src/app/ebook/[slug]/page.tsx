@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
@@ -11,26 +12,20 @@ const BookDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const handleDownload = () => {
-    if (book?.formats?.pdf) {
-      window.open(book.formats.pdf, "_blank"); 
-    } else {
-      alert("Không tìm thấy file PDF để tải!");
-    }
-  };
-
-
+  // 👉 Tải dữ liệu sách
   useEffect(() => {
-    if (!slug) return; 
+    if (!slug) return;
 
     const fetchBook = async () => {
+      setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/books/${slug}`);
+        const res = await fetch(`http://localhost:8080/api/books/slug/${slug}`);
         const data = await res.json();
-        if (res.ok) {
-          setBook(data);
+
+        if (res.ok && data.success && data.data) {
+          setBook(data.data);
         } else {
-          console.error("Không tìm thấy sách");
+          console.error("Không tìm thấy sách hoặc lỗi dữ liệu");
         }
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu sách:", error);
@@ -42,19 +37,29 @@ const BookDetail = () => {
     fetchBook();
   }, [slug]);
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    // TODO: Lưu vào danh sách yêu thích
+  const handleDownload = () => {
+    if (book?.formats?.pdf) {
+      window.open(book.formats.pdf, "_blank");
+    } else {
+      alert("Không tìm thấy file PDF để tải!");
+    }
   };
 
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
+
+  // 👉 Loading
   if (loading) {
     return (
-      <p className="text-center text-gray-500 py-10">
-        Đang tải dữ liệu sách...
-      </p>
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
+        <p className="ml-3 text-gray-500">Đang tải dữ liệu sách...</p>
+      </div>
     );
   }
 
+  // 👉 Nếu không có sách
   if (!book) {
     return (
       <p className="text-center text-red-500 py-10">Không tìm thấy sách!</p>
@@ -63,25 +68,26 @@ const BookDetail = () => {
 
   return (
     <div className="w-full lg:container mx-auto px-4 py-8">
-      {/* Phần trên: Ảnh & thông tin sách */}
+      {/* Ảnh + Thông tin */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Ảnh bìa sách */}
+        {/* Ảnh bìa */}
         <div className="col-span-1 flex justify-center">
           <Image
             src={book.coverImage || "/images/default-book-cover.jpg"}
             width={300}
             height={450}
             alt={book.title}
-            className="rounded-lg shadow-md"
+            priority
+            sizes="(max-width: 768px) 100vw, 300px"
+            className="rounded-lg shadow-md object-cover"
           />
         </div>
 
-        {/* Thông tin sách & Nút hành động */}
+        {/* Thông tin sách */}
         <div className="col-span-2">
           <h1 className="text-2xl font-bold">{book.title}</h1>
           <p className="text-gray-500 text-sm mt-1">
-            {book.views} lượt xem • {book.favorites} yêu thích • ⭐{" "}
-            {book.rating}
+            {book.views} lượt xem • {book.favorites} yêu thích • ⭐ {book.rating}
           </p>
 
           <p className="mt-4">
@@ -92,23 +98,31 @@ const BookDetail = () => {
             . Mời bạn đọc ngay.
           </p>
 
-          <div className="mt-6 space-y-2">
+          <div className="mt-6 space-y-2 text-gray-700">
             <p>
-              <strong>Thể loại:</strong> {book.category}
+              <strong>Thể loại:</strong> {book.category?.join(", ") || "Chưa phân loại"}
             </p>
-            <p>
-              <strong>Bộ sách:</strong> {book.series}
-            </p>
-            <p>
-              <strong>Nguồn:</strong> {book.source}
-            </p>
+            {book.series && (
+              <p>
+                <strong>Bộ sách:</strong> {book.series}
+              </p>
+            )}
+            {book.source && (
+              <p>
+                <strong>Nguồn:</strong> {book.source}
+              </p>
+            )}
           </div>
 
           {/* Nút hành động */}
           <div className="mt-6 flex flex-wrap gap-4">
             <Link
-              href={`/doc-sach/${slug}`}
-              className="bg-pink-600 text-white px-6 py-3 rounded-full hover:bg-pink-700 flex items-center gap-2"
+              href={book.formats?.pdf ? `/doc-sach/${slug}` : "#"}
+              className={`px-6 py-3 rounded-full flex items-center gap-2 text-white transition ${
+                book.formats?.pdf
+                  ? "bg-pink-600 hover:bg-pink-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
               <FaBookOpen /> Đọc Sách Online
             </Link>
@@ -119,20 +133,21 @@ const BookDetail = () => {
             >
               ⬇️ Tải Xuống Ngay
             </button>
+
             <button
               onClick={toggleFavorite}
-              className={`flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-white ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg text-white transition ${
                 isFavorite
                   ? "bg-red-600 hover:bg-red-700"
                   : "bg-gray-500 hover:bg-gray-600"
-              } transition`}
+              }`}
             >
               <FaHeart />
               {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
             </button>
+
             <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2">
-              <FaBookOpen />
-              Xem Danh Sách Yêu Thích
+              <FaBookOpen /> Xem Danh Sách Yêu Thích
             </button>
           </div>
         </div>
@@ -143,8 +158,8 @@ const BookDetail = () => {
         <h3 className="font-semibold text-lg bg-gray-200 px-4 py-2 rounded-t-lg">
           Mô tả
         </h3>
-        <div className="p-4">
-          <p className="text-gray-700">{book.description}</p>
+        <div className="p-4 text-gray-700">
+          <p>{book.description || "Chưa có mô tả cho sách này."}</p>
         </div>
       </div>
 
