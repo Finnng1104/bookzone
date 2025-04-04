@@ -49,7 +49,6 @@ const ForgotPasswordModal: React.FC<ForgotPasswordModalProps> = ({ isOpen, onClo
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quên Mật Khẩu</h2>
         <p className="text-gray-600 text-sm mb-4">Nhập email để đặt lại mật khẩu.</p>
 
-        {/* Input Email */}
         <InputField label="Email" type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
         <div className="flex justify-end mt-4">
