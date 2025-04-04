@@ -145,10 +145,13 @@ class AuthService {
       grant_type: "authorization_code",
     });
 
-    const { access_token } = tokenRes.data;
+    const { access_token, id_token } = tokenRes.data;
+    console.log("access_token", access_token);
+    console.log("id_token", id_token); 
+
 
     const userInfo = await axios.get("https://www.googleapis.com/oauth2/v2/userinfo", {
-      headers: { Authorization: `Bearer ${access_token}` },
+      headers: { authorization: `Bearer ${access_token}` },
     });
 
     const { email, name, picture, id } = userInfo.data;
@@ -164,7 +167,7 @@ class AuthService {
       await user.save();
     }
 
-    return { user, accessToken: access_token };
+    return { user, accessToken: access_token, idToken: id_token };
   }
 
   async googleLogin(googleUser: GoogleUserPayload) {
