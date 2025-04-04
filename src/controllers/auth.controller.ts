@@ -4,39 +4,67 @@ import AuthService from "../services/auth.service";
 class AuthController {
   checkEmail = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { email } = req.query;
-      if (!email || typeof email !== "string") {
-        res.status(400).json({ message: "Email required" });
+      const { email } = req.body;
+      console.log("Email received:", email);  // Log email để kiểm tra
+  
+      // Kiểm tra email hợp lệ
+      if (!email || typeof email !== "string" || !/\S+@\S+\.\S+/.test(email)) {
+        res.status(400).json({ message: "Email không hợp lệ" });
         return;
       }
-      const user = await AuthService.checkEmail(email);
-      res.status(200).json(user);
+  
+      const result = await AuthService.checkEmail(email);
+      console.log("Check result:", result);  
+  
+      if (result.exists) {
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({ message: "Email không tồn tại" });
+      }
+  
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.message || "Lỗi server" });
     }
-  };
+  };   
 
   register = async (req: Request, res: Response): Promise<void> => {
     try {
       const { fullname, email, password } = req.body;
+  
       const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
       const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-
+  
+      // Kiểm tra email hợp lệ
       if (!regex.test(email)) {
-        res.status(400).json({ message: "Email invalid" });
+        res.status(400).json({ message: "Email không hợp lệ" });
         return;
       }
+  
+      // Kiểm tra mật khẩu hợp lệ
       if (!passRegex.test(password)) {
-        res.status(400).json({ message: "Password invalid" });
+        res.status(400).json({ message: "Mật khẩu không hợp lệ" });
         return;
       }
-
+  
+      // Kiểm tra email đã tồn tại chưa
+      const emailCheck = await AuthService.checkEmail(email);
+      if (emailCheck.exists) {
+        res.status(409).json({ message: "Email đã tồn tại" });
+        return;
+      }
+  
+      // Đăng ký người dùng
       const user = await AuthService.register({ fullname, email, password });
-      res.status(201).json(user);
+      if (user.status) {
+        res.status(201).json({ message: user.message, user: user.user });
+      } else {
+        res.status(400).json({ message: user.message });
+      }
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error(error);
+      res.status(500).json({ message: error.message || "Lỗi server" });
     }
-  };
+  };  
 
   login = async (req: Request, res: Response): Promise<void> => {
     try {

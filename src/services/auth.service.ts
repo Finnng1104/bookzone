@@ -10,15 +10,17 @@ import { GoogleUserPayload } from "../types/google.interface";
 dotenv.config();
 
 class AuthService {
-  async checkEmail(email: string): Promise<{ status: boolean; message: string }> {
+  async checkEmail(email: string): Promise<{ exists: boolean; message?: string }> {
     try {
       const user = await UserModel.findOne({ email }).select("email");
-      if (!user) return { status: false, message: "Email không tồn tại" };
-      return { status: true, message: "Email đã tồn tại" };
+      if (!user) {
+        return { exists: false, message: "Email không tồn tại" };
+      }
+      return { exists: true, message: "Email đã tồn tại" };
     } catch (error) {
-      return { status: false, message: "Lỗi server" };
+      throw new Error("Lỗi server");
     }
-  }
+  }   
 
   async register(data: { fullname: string; email: string; password: string }) {
     const { fullname, email, password } = data;
