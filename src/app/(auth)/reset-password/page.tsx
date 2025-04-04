@@ -4,23 +4,35 @@ import React, { useState } from "react";
 
 import { useRouter } from "next/navigation";
 import InputField from "@/components/auth/InputField";
+import { useResetPassword } from "@/hooks/useAuth";
 
 const ResetPassword: React.FC = () => {
-  const [formData, setFormData] = useState({otp: "", password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({otp: "", newpassword: "", confirmnewpassword: "" });
   const router = useRouter();
-
+  const { mutateAsync: resetpassword } = useResetPassword();
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.newpassword !== formData.confirmnewpassword) {
       alert("Mật khẩu không khớp. Vui lòng thử lại.");
       return;
     }
-    console.log("Reset Password Data:", formData);
-    router.push("/login");
+    try {
+      await resetpassword({
+        otp: formData.otp,
+        newpassword: formData.newpassword,
+        confirmnewpassword: formData.confirmnewpassword,
+      })
+    } catch (error) {
+      console.log("Error resetting password:", error);
+      alert("Có lỗi xảy ra khi đặt lại mật khẩu. Vui lòng thử lại.");
+      
+    }
+    await router.push("/login");
   };
 
   return (
@@ -37,8 +49,8 @@ const ResetPassword: React.FC = () => {
           
           <form onSubmit={handleSubmit}>
             <InputField label="Nhập OTP" type="text" name="otp" value={formData.otp} onChange={handleChange} />
-            <InputField label="Mật khẩu mới" type="password" name="password" value={formData.password} onChange={handleChange} />
-            <InputField label="Xác nhận mật khẩu" type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} />
+            <InputField label="Mật khẩu mới" type="password" name="newpassword" value={formData.newpassword} onChange={handleChange} />
+            <InputField label="Xác nhận mật khẩu" type="password" name="confirmnewpassword" value={formData.confirmnewpassword} onChange={handleChange} />
             
             <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded-lg mt-4 hover:bg-blue-600 transition-all">
               Xác Nhận
