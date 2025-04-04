@@ -10,13 +10,13 @@ interface TokenPayload {
 }
 
 export const generalAccessToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET as string, {
+  return jwt.sign(payload, process.env.ACCESS_TOKEN as string, {
     expiresIn: "1h",
   });
 };
 
 export const generalRefreshToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET as string, {
+  return jwt.sign(payload, process.env.ACCESS_TOKEN as string, {
     expiresIn: "1d",
   });
 };
