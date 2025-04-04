@@ -5,7 +5,7 @@ import HeroBanner from "@/components/banner/HeroBanner";
 import NewsSection from "@/components/ui/NewsSection";
 
 const getBooks = async () => {
-  const res = await fetch("http://localhost:8080/api/books", {
+  const res = await fetch("http://localhost:8080/api/books?limit=12", {
     cache: "no-store",
   });
   const json = await res.json();
