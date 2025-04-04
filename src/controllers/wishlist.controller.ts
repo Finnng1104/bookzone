@@ -3,11 +3,14 @@ import { Request, Response } from "express";
 import { IWishlist } from "../types/wishlist.interface";
 
 export default class WishlistController {
-  // Lấy wishlist theo id
-  // Lấy tất cả wishlist
-  static async  getAllWishlists(req: Request, res: Response): Promise<void> {
+  
+  static async getAllWishlists(req: Request, res: Response): Promise<void> {
     try {
-      const wishlists = await WishlistService.getAllWishlists();
+      const { id } = req.params; 
+      if(!id){
+         res.status(400).json({ message: "User ID is required", status: "Error" });
+      }
+      const wishlists = await WishlistService.getAllWishlists(id);
      res.status(200).json({ wishlists, status: "Success" });
     } catch (error) {
      res.status(500).json({
@@ -20,10 +23,10 @@ export default class WishlistController {
   // Tạo wishlist mới
   static async postWishlist(req: Request, res: Response): Promise<void> {
     try {
-      const { id, bookId, userId }: IWishlist = req.body;
+      const { bookId, userId }: IWishlist = req.body;
 
       // Kiểm tra dữ liệu đầu vào
-      if (!id || !bookId || !userId) {
+      if (!bookId || !userId) {
         res.status(400).json({ error: "Missing required fields" });
       }
 

@@ -1,7 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-
 import bookRoutes from './routes/book.routes';
 import connectDB from './config/db';
 import authRoutes from './routes/auth.routes';

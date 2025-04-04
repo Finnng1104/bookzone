@@ -1,10 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { IWishlist } from "../types/wishlist.interface";
 const wishlistSchema = new Schema<IWishlist>({
-    id: {
-        type: String, 
-        required: true, 
-    }, 
+    
     bookId: {
         type: String, 
         ref: "Book", 

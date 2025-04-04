@@ -45,7 +45,7 @@ class AuthController {
   
       // Kiểm tra mật khẩu hợp lệ
       if (!passRegex.test(password)) {
-        res.status(400).json({ message: "Mật khẩu không hợp lệ" });
+        res.status(400).json({ message: "Mật khẩu phải có 8 kí tự bao gồm cả chữ và số" });
         return;
       }
   
@@ -120,6 +120,7 @@ class AuthController {
       res.status(200).json({
         status: "OK",
         message: "Login success",
+        access_token, 
         user: {
           id,
           email: userEmail,

@@ -3,9 +3,9 @@ import { IWishlist } from "../types/wishlist.interface";
 
 export class WishlistService {
   // Lấy tất cả wishlist
-  async getAllWishlists(): Promise<IWishlist[]> {
+  async getAllWishlists(id?: unknown): Promise<IWishlist[]> {
     try {
-      const wishlists = await Wishlist.find();
+      const wishlists = await Wishlist.find({userId: id});
       return wishlists;
     } catch (error) {
       throw new Error("Error fetching wishlists: " + (error as Error).message);
