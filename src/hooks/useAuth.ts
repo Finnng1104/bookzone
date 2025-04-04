@@ -10,6 +10,7 @@ const BASE_URL_REGISTER = process.env.NEXT_PUBLIC_REGISTER;
 const BASE_URL_EMAILDUBPLICATE = process.env.NEXT_PUBLIC_EMAILDUPLICATE;
 const BASE_URL_LOGIN_GOOGLE = process.env.NEXT_PUBLIC_LOGIN_GOOGLE;
 const BASE_URL_FORGOTPASSWORD = process.env.NEXT_PUBLIC_FORGOTPASSWORD;
+const BASE_URL_CONFIRMNEWPASSWORD = process.env.NEXT_PUBLIC_RESETPASSWORD; 
 interface RegisterData {
   fullname: string;
   email: string; 
@@ -76,4 +77,16 @@ export const useForgotPassword = () => {
       return response.data;
     }
   });
+}
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async (data: { otp: string; newpassword: string; confirmnewpassword: string}) => {
+      const response = await axios.put(`${BASE_URL_CONFIRMNEWPASSWORD}`, {
+        otp: data.otp, 
+        newpassword: data.newpassword, 
+        confirmnewpassword: data.confirmnewpassword, 
+      })
+      return response.data; 
+    }
+  })
 }
