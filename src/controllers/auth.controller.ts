@@ -148,13 +148,22 @@ class AuthController {
 
   changepassword = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { otp, newpassword } = req.body;
-      if (!otp || !newpassword) {
-        res.status(400).json({ message: "OTP and new password required" });
+      const { otp, newPassword } = req.body;
+      
+      if (!otp || !newPassword) {
+        res.status(400).json({ message: "OTP và mật khẩu mới là bắt buộc" });
         return;
       }
-
-      const result = await AuthService.changePassword(otp, newpassword);
+  
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+  
+      if (!passwordRegex.test(newPassword)) {
+        res.status(400).json({ message: "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ thường, số và ký tự đặc biệt." });
+        return;
+      }
+  
+      // Thực hiện thay đổi mật khẩu
+      const result = await AuthService.changePassword(otp, newPassword);
       res.status(200).json(result);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
