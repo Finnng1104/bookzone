@@ -12,13 +12,12 @@ const ResetPassword: React.FC = () => {
     confirmPassword: "",
   });
   const router = useRouter();
-  const { mutate, status } = useChangePassword();  
+  const { mutate, status } = useChangePassword();  // Get status from useChangePassword
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -80,9 +79,9 @@ const ResetPassword: React.FC = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 text-white py-3 rounded-lg mt-4 hover:bg-blue-600 transition-all"
-              disabled={status === "pending"}  
+              disabled={status === "pending"}  // Use "pending" instead of "loading"
             >
-              {status === "pending" ? "Đang xử lý..." : "Xác Nhận"} 
+              {status === "pending" ? "Đang xử lý..." : "Xác Nhận"}  {/* Use "pending" status */}
             </button>
           </form>
         </div>
