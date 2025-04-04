@@ -29,3 +29,29 @@ export const usePostWishlist = () => {
         },
     });
 }
+export const useGetWishlist = () => {
+    return useMutation({
+        mutationFn: async () => {
+            const response = await axios.get(`${BASE_URL_GET_WISHLIST}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: "Bearer " + Cookies.get("access_token"),
+                },
+            });
+            return response.data;
+        },
+    });
+}
+export const useDeleteWishlist = () => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const response = await axios.delete(`${BASE_URL_DELETE_WISHLIST}/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: "Bearer " + Cookies.get("access_token"),
+                },
+            });
+            return response.data;
+        },
+    });
+}

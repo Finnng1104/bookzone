@@ -5,8 +5,12 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaHeart, FaBookOpen } from "react-icons/fa";
-
+import { useRouter } from "next/navigation";
+import { usePostWishlist } from "@/hooks/useWishlist";
+s
 const BookDetail = () => {
+  const router = useRouter();
+  const { mutationAsync: postwishlist } = usePostWishlist();
   const { slug } = useParams();
   const [book, setBook] = useState<any>(null);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -45,10 +49,6 @@ const BookDetail = () => {
     }
   };
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-  };
-
   // 👉 Loading
   if (loading) {
     return (
@@ -65,7 +65,23 @@ const BookDetail = () => {
       <p className="text-center text-red-500 py-10">Không tìm thấy sách!</p>
     );
   }
-
+  const handleAddToWishlist = async () => {
+    router.push("/wishlist")
+    setIsFavorite(!isFavorite);
+    try {
+      const response = await postwishlist(book._id);
+      if (response) {
+        alert("Đã thêm vào danh sách yêu thích!");
+        setIsFavorite(true);
+      } else {
+        alert("Lỗi khi thêm vào danh sách yêu thích.");
+      }
+    }
+    catch (error) {
+      console.error("Error adding to wishlist:", error);
+      alert("Có lỗi xảy ra khi thêm vào danh sách yêu thích.");
+    }
+  }
   return (
     <div className="w-full lg:container mx-auto px-4 py-8">
       {/* Ảnh + Thông tin */}
@@ -135,7 +151,7 @@ const BookDetail = () => {
             </button>
 
             <button
-              onClick={toggleFavorite}
+              onClick={handleAddToWishlist}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg text-white transition ${
                 isFavorite
                   ? "bg-red-600 hover:bg-red-700"
