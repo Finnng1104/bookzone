@@ -2,26 +2,45 @@
 
 import React, { useState, useEffect } from "react";
 import BookCard from "@/components/ui/BookCard";
-
+import IBook from "@/types/book.interface";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 const BOOKS_PER_PAGE = 30;
 
 const BookLibrary = () => {
-  const [books, setBooks] = useState<any[]>([]); // ✅ Đảm bảo `books` luôn có giá trị mảng
+  const [books, setBooks] = useState<IBook[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
 
-  // 📡 Gọi API lấy danh sách sách theo trang
   useEffect(() => {
     const fetchBooks = async () => {
       setLoading(true);
+
       try {
-        const res = await fetch(`http://localhost:8080/api/books`);
+       
+        const searchType = searchParams.get("type");
+        const searchQuery = searchParams.get("q");
+
+        let url = "http://localhost:8080/api/books";
+
+        if (searchQuery?.trim()) {
+          const query = encodeURIComponent(searchQuery.trim());
+
+          if (searchType === "title") {
+            url = `http://localhost:8080/api/books/search/title/${query}`;
+          } else if (searchType === "author") {
+            url = `http://localhost:8080/api/books/search/author/${query}`;
+          }
+        }
+
+        const res = await fetch(url);
         const data = await res.json();
 
-        if (res.ok && Array.isArray(data)) {
-          setBooks(data); // ✅ API trả về mảng sách
-          setTotalPages(Math.ceil(data.length / BOOKS_PER_PAGE)); // ✅ Tính tổng số trang
+        if (res.ok && data.success && Array.isArray(data.data)) {
+          setBooks(data.data);
+          setTotalPages(Math.ceil(data.data.length / BOOKS_PER_PAGE));
         } else {
           console.error("Lỗi khi tải danh sách sách:", data.message);
           setBooks([]);
@@ -35,15 +54,13 @@ const BookLibrary = () => {
     };
 
     fetchBooks();
-  }, []);
+  }, [searchParams]);
 
-  // Tính toán danh sách sách hiển thị trên trang hiện tại
   const startIndex = (currentPage - 1) * BOOKS_PER_PAGE;
   const selectedBooks = books.slice(startIndex, startIndex + BOOKS_PER_PAGE);
 
   return (
     <div className="w-full xl:container mx-auto px-4 py-8">
-      {/* Tiêu đề */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">Thư viện sách</h2>
         <p className="text-gray-600 text-sm mt-2">
@@ -51,14 +68,30 @@ const BookLibrary = () => {
         </p>
       </div>
 
-      {/* Hiển thị trạng thái loading */}
       {loading ? (
         <p className="text-center text-gray-500">Đang tải sách...</p>
       ) : books.length === 0 ? (
-        <p className="text-center text-red-500">Không tìm thấy sách.</p>
+        <div className="flex flex-col items-center justify-center text-center text-gray-500 mt-12 space-y-4">
+          <div className="text-5xl">📚</div>
+
+          <h3 className="text-xl font-semibold text-gray-700">
+            Không tìm thấy kết quả nào
+          </h3>
+
+          <p className="text-sm">
+            Có thể bạn đang tìm kiếm sai chính tả, hoặc sách chưa có trong hệ
+            thống.
+          </p>
+
+          <Link
+            href="/thu-vien-sach"
+            className="mt-2 inline-block px-5 py-2 bg-primary text-white rounded-full hover:bg-opacity-90 transition"
+          >
+            🔄 Xem tất cả sách
+          </Link>
+        </div>
       ) : (
         <>
-          {/* Danh sách sách */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-items-center">
             {selectedBooks.map((book) => (
               <BookCard
@@ -74,7 +107,6 @@ const BookLibrary = () => {
             ))}
           </div>
 
-          {/* Pagination */}
           <div className="flex justify-center mt-8 space-x-2">
             <button
               className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300 transition disabled:opacity-50"

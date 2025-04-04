@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-// Danh sách map slug không dấu -> Tiêu đề có dấu
 const pathMap: Record<string, string> = {
   "thu-vien-sach": "Thư Viện Sách",
   "van-hoc": "Văn Học",
@@ -16,18 +15,16 @@ const pathMap: Record<string, string> = {
 };
 
 const Breadcrumb = () => {
-  const pathname = usePathname(); // Lấy đường dẫn hiện tại
-  const pathArray = pathname.split("/").filter((item) => item); // Cắt đường dẫn thành mảng
+  const pathname = usePathname(); 
+  const pathArray = pathname.split("/").filter((item) => item); 
 
   return (
-    <div className="bg-bgBreadcrumb py-6">
+    <div className="bg-secondary py-6">
       <div className=" w-full xl:container mx-auto px-4">
-        {/* Tiêu đề chính (lấy từ path cuối cùng) */}
         <h2 className="text-white text-2xl font-bold capitalize">
           {pathMap[pathArray[pathArray.length - 1]] || pathArray[pathArray.length - 1]}
         </h2>
 
-        {/* Breadcrumb */}
         <div className="text-white text-sm mt-2 flex space-x-2">
           <Link href="/" className="hover:underline">TRANG CHỦ</Link>
           {pathArray.map((item, index) => (

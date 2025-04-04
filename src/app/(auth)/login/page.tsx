@@ -7,8 +7,7 @@ export default function LoginPage() {
     >
       <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
-      {/* Form đăng nhập */}
-      <div className="relative z-10 w-full max-w-md sm:w-96 md:w-4/12">
+      <div className="relative z-10 w-full sm:w-96 md:w-4/12">
         <LoginForm />
       </div>
     </div>
