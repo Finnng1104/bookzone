@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import AuthService from "../services/auth.service";
+import { generalAccessToken, generalRefreshToken } from "../services/jwt.service";
+import dotenv from 'dotenv';
 
+dotenv.config();
 class AuthController {
   checkEmail = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -70,35 +73,61 @@ class AuthController {
     try {
       const { email, password } = req.body;
       const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-
+  
       if (!email || !password) {
         res.status(400).json({ message: "Email and password required" });
         return;
       }
-
+  
       if (!reg.test(email)) {
         res.status(400).json({ message: "Invalid email format" });
         return;
       }
+  
+      const result = await AuthService.login(email, password);
+  
+      if ("status" in result && result.status === false) {
+        res.status(401).json({ message: result.message || "Unauthorized" });
+        return;
+      }
+  
+      const { access_token, refresh_token, user } = result;
+      console.log("Access Token:", access_token);
+      console.log("Refresh Token:", refresh_token);   
+      console.log("NODE_ENV:", process.env.NODE_ENV);
+      
 
-      const user = await AuthService.login(email, password);
-      const { refresh_token, access_token, ...newResponse } = user;
-
-      res.cookie("refresh_token", refresh_token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+      const { id, email: userEmail, role } = user!;
+      
+  
+      // 👉 Lưu cookie
+      res.cookie("access_token", access_token, {
+        httpOnly: true, 
+        secure: true,  
         sameSite: "none",
+        path: "/",
+        maxAge: 60 * 60 * 1000,
+      });
+  
+      res.cookie("refresh_token", refresh_token, {
+        httpOnly: true, 
+        secure: true,  
+        sameSite: "none",
+        path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
-
+  
       res.status(200).json({
         status: "OK",
         message: "Login success",
-        refresh_token,
-        user: newResponse.user,
+        user: {
+          id,
+          email: userEmail,
+          role,
+        },
       });
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error.message || "Internal Server Error" });
     }
   };
 
@@ -136,7 +165,7 @@ class AuthController {
     try {
       res.clearCookie("refresh_token", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "none",
       });
 
@@ -182,11 +211,20 @@ class AuthController {
         avatar,
         sub,
       });
+
+      res.cookie("access_token", access_token, {
+        httpOnly: true, 
+        secure: true,  
+        sameSite: "none",
+        path: "/",
+        maxAge: 60 * 60 * 1000,
+      });
   
       res.cookie("refresh_token", refresh_token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         sameSite: "none",
+        path: "/",
         maxAge: 24 * 60 * 60 * 1000, // 1 ngày
       });
   

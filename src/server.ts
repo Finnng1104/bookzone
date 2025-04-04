@@ -6,14 +6,15 @@ import bookRoutes from './routes/book.routes';
 import connectDB from './config/db';
 import authRoutes from './routes/auth.routes';
 import wishlistRoutes from './routes/wishlist.routes';
-
-dotenv.config();
-
+import cookieParser from 'cookie-parser';
 const app = express();
-
+app.use(cookieParser());
+dotenv.config();
 connectDB();
-
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', 
+  credentials: true, 
+}));
 app.use(express.json());
 
 app.use("/api/books", bookRoutes);

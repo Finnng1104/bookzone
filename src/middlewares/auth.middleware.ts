@@ -21,6 +21,7 @@ export const authUserMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
+
   const token = extractToken(req);
 
   if (!token) {
