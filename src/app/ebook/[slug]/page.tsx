@@ -5,16 +5,13 @@ import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { FaHeart, FaBookOpen } from "react-icons/fa";
-<<<<<<< HEAD
 import { useRouter } from "next/navigation";
 import { usePostWishlist } from "@/hooks/useWishlist";
 import Cookies from "js-cookie";
 import axios from "axios";
 axios.defaults.withCredentials = true;
-=======
 import { IBook } from "@/types/book.interface";
 import RelatedBooks from "@/components/ui/RelatedBooks";
->>>>>>> fef6c62d4e02f96ee1e98b235be4b9aeb78f14c3
 
 const BookDetail = () => {
   const router = useRouter();
@@ -57,14 +54,10 @@ const BookDetail = () => {
     }
   };
 
-<<<<<<< HEAD
-  // 👉 Loading
-=======
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
 
->>>>>>> fef6c62d4e02f96ee1e98b235be4b9aeb78f14c3
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">
