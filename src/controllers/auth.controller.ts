@@ -45,7 +45,7 @@ class AuthController {
   
       // Kiểm tra mật khẩu hợp lệ
       if (!passRegex.test(password)) {
-        res.status(400).json({ message: "Mật khẩu không hợp lệ" });
+        res.status(400).json({ message: "Mật khẩu phải có 8 kí tự bao gồm cả chữ và số" });
         return;
       }
   
@@ -162,7 +162,6 @@ class AuthController {
         return;
       }
   
-      // Thực hiện thay đổi mật khẩu
       const result = await AuthService.changePassword(otp, newPassword);
       res.status(200).json(result);
     } catch (error: any) {
