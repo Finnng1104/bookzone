@@ -1,17 +1,15 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
-
 import bookRoutes from './routes/book.routes';
 import connectDB from './config/db';
 import authRoutes from './routes/auth.routes';
-
-dotenv.config();
-
+import wishlistRoutes from './routes/wishlist.routes';
+import cookieParser from 'cookie-parser';
 const app = express();
-
+app.use(cookieParser());
+dotenv.config();
 connectDB();
-
 app.use(cors({
   origin: 'http://localhost:3000', 
   credentials: true, 
@@ -20,7 +18,7 @@ app.use(express.json());
 
 app.use("/api/books", bookRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use("/api/wishlist", wishlistRoutes);
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

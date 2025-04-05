@@ -120,6 +120,7 @@ class AuthController {
       res.status(200).json({
         status: "OK",
         message: "Login success",
+        access_token, 
         user: {
           id,
           email: userEmail,
