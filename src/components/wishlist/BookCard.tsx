@@ -3,7 +3,7 @@ import Image from 'next/image';
 interface Book {
   id: number;
   title: string;
-  image: string;
+  coverImage: string;
 }
 
 interface BookCardProps {
@@ -14,7 +14,7 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ book, onRemove }) => {
   return (
     <div className="bg-white p-3 rounded-lg shadow-md w-full">
-      <Image src={book.image} alt={book.title} width={150} height={200} className="rounded-md w-full" />
+      <Image src={book.coverImage} alt={book.title} width={150} height={200} className="rounded-md w-full" />
       <h3 className="text-sm font-semibold mt-2 text-center">{book.title}</h3>
       <button
         onClick={() => onRemove(book.id)}

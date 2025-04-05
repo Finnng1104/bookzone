@@ -29,8 +29,7 @@ const BookDetail = () => {
       try {
         const res = await fetch(`http://localhost:8080/api/books/slug/${slug}`);
         const data = await res.json();
-        console.log("Book data:", data); 
-        
+
         if (res.ok && data.success && data.data) {
           setBook(data.data);
         } else {
@@ -57,6 +56,7 @@ const BookDetail = () => {
   const toggleFavorite = () => {
     setIsFavorite(!isFavorite);
   };
+  // 👉 Loading
 
   if (loading) {
     return (
@@ -73,39 +73,47 @@ const BookDetail = () => {
     );
   }
   const handleAddToWishlist = async () => {
-    router.push("/wishlist")
-    setIsFavorite(!isFavorite);
+    const userCookie = Cookies.get("user");
+    if (!userCookie) {
+      alert("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
+      router.push("/login");
+      return;
+    }
+
+    const user = JSON.parse(userCookie);
+
+    if (!user.id || !book?._id) {
+      alert("Không đủ thông tin người dùng hoặc sách.");
+      return;
+    }
+
+    if (isFavorite) {
+      alert("Sách đã trong danh sách yêu thích!");
+      return;
+    }
+
     try {
-      const user = Cookies.get("user");
-      console.log("user:", user); 
-      if (isFavorite) {
-        alert("Sách đã có trong danh sách yêu thích!");
-        return;
-      }    
-      if (!user) {
-        alert("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
-        router.push("/login");
-        return;
-      }
       const response = await postwishlist({
+        userId: user.id,
         bookId: book._id,
-        headers: {
-          credentials: "include"
-        },
       });
-  
-      if (response) {
+
+      if (response?.status === "Success") {
         alert("Đã thêm vào danh sách yêu thích!");
         setIsFavorite(true);
+        router.push("/wishlist");
       } else {
-        alert("Lỗi khi thêm vào danh sách yêu thích.");
+        alert("Thêm vào yêu thích thất bại.");
       }
+    } catch (error) {
+      console.error("Lỗi khi thêm yêu thích:", error);
+      alert("Có lỗi xảy ra.");
     }
-    catch (error) {
-      console.error("Error adding to wishlist:", error);
-      alert("Có lỗi xảy ra khi thêm vào danh sách yêu thích.");
-    }
+  };
+  const handlenavigatewishlish = () => {
+    router.push("/wishlist"); 
   }
+
   return (
     <div className="w-full lg:container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -124,7 +132,8 @@ const BookDetail = () => {
         <div className="col-span-2">
           <h1 className="text-2xl font-bold">{book.title}</h1>
           <p className="text-gray-500 text-sm mt-1">
-            {book.views} lượt xem • {book.favorites} yêu thích • ⭐ {book.rating}
+            {book.views} lượt xem • {book.favorites} yêu thích • ⭐{" "}
+            {book.rating}
           </p>
 
           <p className="mt-4">
@@ -137,7 +146,8 @@ const BookDetail = () => {
 
           <div className="mt-6 space-y-2 text-gray-700">
             <p>
-              <strong>Thể loại:</strong> {book.category?.join(", ") || "Chưa phân loại"}
+              <strong>Thể loại:</strong>{" "}
+              {book.category?.join(", ") || "Chưa phân loại"}
             </p>
             {book.series && (
               <p>
@@ -182,7 +192,7 @@ const BookDetail = () => {
               {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
             </button>
 
-            <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2">
+            <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2" onClick={handlenavigatewishlish}>
               <FaBookOpen /> Xem Danh Sách Yêu Thích
             </button>
           </div>
@@ -206,8 +216,8 @@ const BookDetail = () => {
         </p>
       </div>
       {book.category && book.category.length > 0 && (
-      <RelatedBooks category={book.category[0]} />
-    )}
+        <RelatedBooks category={book.category[0]} />
+      )}
     </div>
   );
 };

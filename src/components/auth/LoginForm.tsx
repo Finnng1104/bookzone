@@ -9,8 +9,11 @@ import { handleGoogleLogin, useLogin } from "@/hooks/useAuth";
 import Cookies from "js-cookie";
 import { GoogleLogin, GoogleOAuthProvider, CredentialResponse } from "@react-oauth/google";
 import SuccessModal from "@/components/ui/SuccessModal";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
 const LoginForm: React.FC = () => {
+  const [showPassword, setShowPassword ] = useState(false); 
+
   const router = useRouter();
   
   const [isSuccess, setIsSuccess] = useState(false); 
@@ -91,7 +94,7 @@ const LoginForm: React.FC = () => {
     setIsSuccess(false);
     router.push("/"); 
   };
-
+  
   return (
     <>
       <AuthForm title="Đăng Nhập" onSubmit={handleSubmit}>
@@ -104,14 +107,23 @@ const LoginForm: React.FC = () => {
             onChange={handleChange}
           />
           {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-
+          <div className="relative flex justify-end">
           <InputField
             label="Mật khẩu"
-            type="password"
+            type={showPassword ? "text": "password"}
             name="password"
             value={formData.password}
             onChange={handleChange}
           />
+           <button
+          type="button"
+          className="absolute top-12 right-2 text-gray-500 hover:text-gray-700"
+          onClick={() => setShowPassword(!showPassword)}
+          >
+          {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+        </button>
+          </div>
+          
           {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
 
           <div className="text-right text-blue-600 hover:underline text-sm mt-2">
