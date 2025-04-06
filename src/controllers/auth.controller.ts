@@ -8,9 +8,8 @@ class AuthController {
   checkEmail = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email } = req.body;
-      console.log("Email received:", email);  // Log email để kiểm tra
+      console.log("Email received:", email);
   
-      // Kiểm tra email hợp lệ
       if (!email || typeof email !== "string" || !/\S+@\S+\.\S+/.test(email)) {
         res.status(400).json({ message: "Email không hợp lệ" });
         return;
@@ -35,28 +34,24 @@ class AuthController {
       const { fullname, email, password } = req.body;
   
       const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-      const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
   
-      // Kiểm tra email hợp lệ
       if (!regex.test(email)) {
         res.status(400).json({ message: "Email không hợp lệ" });
         return;
       }
   
-      // Kiểm tra mật khẩu hợp lệ
       if (!passRegex.test(password)) {
-        res.status(400).json({ message: "Mật khẩu phải có 8 kí tự bao gồm cả chữ và số" });
+        res.status(400).json({ message: "Mật khẩu phải có 8 kí tự bao gồm cả chữ và số và kí tự đặc biệt" });
         return;
       }
   
-      // Kiểm tra email đã tồn tại chưa
       const emailCheck = await AuthService.checkEmail(email);
       if (emailCheck.exists) {
         res.status(409).json({ message: "Email đã tồn tại" });
         return;
       }
   
-      // Đăng ký người dùng
       const user = await AuthService.register({ fullname, email, password });
       if (user.status) {
         res.status(201).json({ message: user.message, user: user.user });
@@ -92,26 +87,20 @@ class AuthController {
       }
   
       const { access_token, refresh_token, user } = result;
-      console.log("Access Token:", access_token);
-      console.log("Refresh Token:", refresh_token);   
-      console.log("NODE_ENV:", process.env.NODE_ENV);
-      
-
-      const { id, email: userEmail, role } = user!;
-      
   
-      // 👉 Lưu cookie
+      const { id, email: userEmail, role, fullname, avatar } = user!;
+  
       res.cookie("access_token", access_token, {
-        httpOnly: true, 
-        secure: true,  
+        httpOnly: true,
+        secure: true,
         sameSite: "none",
         path: "/",
         maxAge: 60 * 60 * 1000,
       });
   
       res.cookie("refresh_token", refresh_token, {
-        httpOnly: true, 
-        secure: true,  
+        httpOnly: true,
+        secure: true,
         sameSite: "none",
         path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -120,11 +109,13 @@ class AuthController {
       res.status(200).json({
         status: "OK",
         message: "Login success",
-        access_token, 
+        access_token,
         user: {
           id,
           email: userEmail,
           role,
+          fullname,
+          avatar,
         },
       });
     } catch (error: any) {
