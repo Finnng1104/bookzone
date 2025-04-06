@@ -30,7 +30,6 @@ export default class WishlistController {
         res.status(400).json({ error: "Missing required fields" });
       }
 
-      // Tạo wishlist mới
       const newWishlist = await WishlistService.createWishlist(req.body);
        res.status(201).json({ newWishlist, status: "Success" });
     } catch (error) {
