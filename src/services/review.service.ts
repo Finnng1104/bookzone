@@ -9,46 +9,69 @@ interface CreateReviewDto {
 }
 
 export const createReview = async (data: CreateReviewDto) => {
-  const book = await Book.findOne({ slug: data.slug });
-  if (!book) {
-    throw new Error("Book not found");
-  }
-
-  const review = new Review({
-    userId: data.userId,
-    bookId: book._id,
-    rating: data.rating,
-    comment: data.comment,
-  });
-
-  return await review.save();
-};
-
-export const getReviewsBySlug = async (slug: string, page: number = 1, limit: number = 5) => {
-  const skip = (page - 1) * limit;
-
-  const book = await Book.findOne({ slug });
-  if (!book) {
-    throw new Error("Book not found");
-  }
-
-  const [reviews, total] = await Promise.all([
-    Review.find({ bookId: book._id })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean(),
-    Review.countDocuments({ bookId: book._id }),
-  ]);
-
-  return {
-    reviews,
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
+    const book = await Book.findOne({ slug: data.slug });
+    if (!book) {
+      throw new Error("Book not found");
+    }
+  
+    const existingReview = await Review.findOne({
+      userId: data.userId,
+      bookId: book._id,
+    });
+  
+    if (existingReview) {
+      throw new Error("Bạn đã đánh giá cuốn sách này rồi");
+    }
+  
+    const review = new Review({
+      userId: data.userId,
+      bookId: book._id,
+      rating: data.rating,
+      comment: data.comment,
+    });
+  
+    return await review.save();
   };
-};
+
+export const getReviewsBySlug = async (
+    slug: string,
+    page: number = 1,
+    limit: number = 5,
+    rating?: number
+  ) => {
+    const skip = (page - 1) * limit;
+  
+    const book = await Book.findOne({ slug });
+    if (!book) {
+      throw new Error("Book not found");
+    }
+  
+    const query: any = { bookId: book._id };
+    if (rating) {
+      query.rating = rating;
+    }
+  
+    const [reviews, total] = await Promise.all([
+      Review.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: "userId",
+          select: "fullname avatar",
+        })
+        .lean(),
+      Review.countDocuments(query),
+    ]);
+  
+    return {
+      reviews,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  };
 
 export const updateReview = async (
   reviewId: string,
