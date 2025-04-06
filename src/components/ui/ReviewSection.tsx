@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa";
+import { FaEdit, FaStar, FaTrash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useParams } from "next/navigation";
@@ -236,99 +236,106 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
         ))}
       </div>
 
-      {/* Total results */}
       {!loadingList && (
-        <p className="text-sm text-gray-600 mb-4">
-          Tổng cộng <strong>{total}</strong> đánh giá
-        </p>
-      )}
+  <p className="text-sm text-gray-600 mb-4">
+    Hiển thị <strong className="text-pink-600">{total}</strong> đánh giá
+  </p>
+)}
 
       {/* List */}
-      <div>
-        <h4 className="font-medium mb-3">Danh sách đánh giá 📝</h4>
+<div>
+  <h4 className="font-medium mb-3">Danh sách đánh giá 📝</h4>
 
-        {loadingList ? (
-          <p className="text-gray-500 text-sm">Đang tải đánh giá...</p>
-        ) : reviews.length === 0 ? (
-          <p className="text-gray-500 text-sm">Chưa có đánh giá nào.</p>
-        ) : (
-          <div className="space-y-4">
-            {reviews.map((review) => (
-  <div
-    key={review._id}
-    className="flex items-start gap-3 bg-gray-50 p-4 rounded-lg shadow-sm"
-  >
-    <Image
-      src={review.userId?.avatar || "/default-avatar.jpg"}
-      alt="Avatar"
-      width={48}
-      height={48}
-      className="rounded-full object-cover"
-    />
+  {loadingList ? (
+    <p className="text-gray-500 text-sm">Đang tải đánh giá...</p>
+  ) : reviews.length === 0 ? (
+    <p className="text-gray-500 text-sm">Chưa có đánh giá nào.</p>
+  ) : (
+    <div className="space-y-4">
+      {reviews.map((review) => (
+        <div
+          key={review._id}
+          className="flex gap-4 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow"
+        >
+          <div className="flex-shrink-0">
+            <Image
+              src={review.userId?.avatar || "/default-avatar.jpg"}
+              alt="Avatar"
+              width={48}
+              height={48}
+              className="rounded-full object-cover ring-2 ring-white"
+            />
+          </div>
 
-    <div className="flex-1">
-      <div className="flex items-center gap-2">
-        <p className="font-semibold">
-          {review.userId?.fullname || "Người dùng ẩn danh"}
-        </p>
-        <span className="text-gray-400 text-xs">
-          {formatDate(review.createdAt)}
-        </span>
-      </div>
-      <div className="flex items-center mb-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <FaStar
-            key={star}
-            className={`${
-              star <= review.rating ? "text-yellow-400" : "text-gray-300"
-            } text-sm`}
-          />
-        ))}
-      </div>
-      <p className="text-sm text-gray-600">{review.comment}</p>
+          <div className="flex-1 space-y-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="font-medium text-gray-900">
+                  {review.userId?.fullname || "Người dùng ẩn danh"}
+                </h4>
+                <div className="flex items-center gap-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <FaStar
+                        key={star}
+                        className={`${
+                          star <= review.rating ? "text-yellow-400" : "text-gray-200"
+                        } text-sm`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {formatDate(review.createdAt)}
+                  </span>
+                </div>
+              </div>
 
-      {/* ✅ Hiển thị nút sửa / xoá chỉ khi userId trùng */}
-      {currentUserId === review.userId?._id && (
-        <div className="flex gap-2 mt-2 text-sm">
-          <button
-            onClick={() => handleEdit(review)}
-            className="text-blue-500 hover:underline"
-          >
-            Sửa
-          </button>
-          <button
-            onClick={() => handleDelete(review._id)}
-            className="text-red-500 hover:underline"
-          >
-            Xoá
-          </button>
-        </div>
-      )}
-    </div>
+              {currentUserId === review.userId?._id && (
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => handleEdit(review)}
+      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+      title="Sửa đánh giá"
+    >
+      <FaEdit className="text-blue-600 text-lg" />
+    </button>
+    <button
+      onClick={() => handleDelete(review._id)}
+      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+      title="Xoá đánh giá"
+    >
+      <FaTrash className="text-red-600 text-lg" />
+    </button>
   </div>
-))}
-          </div>
-        )}
+)}
+            </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-6 flex justify-center gap-2">
-            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`px-3 py-1 rounded ${
-                  pageNumber === page
-                    ? "bg-pink-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-pink-100"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            ))}
+            <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
           </div>
-        )}
-      </div>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {/* Pagination */}
+  {totalPages > 1 && (
+    <div className="mt-6 flex justify-center gap-2">
+      {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNumber) => (
+        <button
+          key={pageNumber}
+          onClick={() => handlePageChange(pageNumber)}
+          className={`px-3 py-1 rounded transition-all ${
+            pageNumber === page
+              ? "bg-pink-600 text-white shadow-md transform -translate-y-0.5"
+              : "bg-gray-200 text-gray-700 hover:bg-pink-100"
+          }`}
+        >
+          {pageNumber}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
     </div>
   );
 };

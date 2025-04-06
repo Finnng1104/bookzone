@@ -134,15 +134,15 @@ const BookList: React.FC<BookListProps> = ({
         </>
       )}
 
-      {buttonText && buttonLink && (
-        <div className="flex justify-center mt-8">
-          <Link
-            href={buttonLink}
-            className="bg-secondary text-white font-semibold px-6 py-3 rounded-full transition flex items-center space-x-2 hover:bg-[#D13D35]"
-          >
-            <span>📖 {buttonText}</span>
-          </Link>
-        </div>
+{buttonText && buttonLink && (
+  <div className="flex justify-center mt-8">
+    <Link
+      href={buttonLink}
+      className="bg-secondary text-white font-semibold px-6 py-3 rounded-full transition transform flex items-center space-x-2 hover:scale-105"
+    >
+      <span>📖 {buttonText}</span>
+    </Link>
+  </div>
       )}
     </div>
   );

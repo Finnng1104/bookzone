@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { getDocument, GlobalWorkerOptions, PDFDocumentProxy } from "pdfjs-dist";
-import { FaSearchPlus, FaSearchMinus, FaDownload, FaArrowLeft, FaArrowRight, FaBookOpen } from "react-icons/fa";
+import { FaSearchPlus, FaSearchMinus, FaDownload, FaArrowLeft, FaArrowRight, FaBookOpen, FaSpinner } from "react-icons/fa";
 
 GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
@@ -143,53 +143,111 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
   };
 
   if (loading) {
-    return <p className="text-center text-gray-500 py-10">Đang tải dữ liệu sách...</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-600">
+        <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+        <p className="text-lg font-medium">Đang tải dữ liệu sách...</p>
+        <p className="text-sm text-gray-500 mt-2">Vui lòng đợi trong giây lát</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <p className="text-center text-red-500 py-10">{error}</p>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-600">
+        <div className="text-center max-w-md mx-auto p-8 bg-white rounded-xl shadow-sm">
+          <FaBookOpen className="text-4xl text-red-500 mb-4 mx-auto" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Rất tiếc!</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Thử lại
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="w-full px-4">
-      <div className="flex flex-wrap justify-between items-center bg-white border shadow-md rounded-lg px-4 py-2 mb-6">
-        <div className="flex items-center gap-2 flex-wrap">
-          <button onClick={() => setScale((prev) => prev + 0.2)} className="p-2 bg-gray-100 rounded hover:bg-gray-200">
-            <FaSearchPlus />
-          </button>
-          <button onClick={() => setScale((prev) => Math.max(0.4, prev - 0.2))} className="p-2 bg-gray-100 rounded hover:bg-gray-200">
-            <FaSearchMinus />
-          </button>
-          <button onClick={() => setDualPage(!dualPage)} className="p-2 bg-gray-100 rounded hover:bg-gray-200 flex items-center gap-1">
-            <FaBookOpen />
-            <span className="hidden sm:inline">{dualPage ? "Single" : "Dual"}</span>
-          </button>
-        </div>
+    <div className="w-full px-4 py-6">
+      {/* Toolbar */}
+      <div className="sticky top-0 z-10 bg-white border border-gray-200 shadow-sm rounded-xl px-6 py-4 mb-8">
+        <div className="flex flex-wrap gap-6 justify-between items-center">
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setScale((prev) => prev + 0.2)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Phóng to"
+            >
+              <FaSearchPlus className="text-gray-600" />
+              <span className="hidden sm:inline text-sm font-medium">Phóng to</span>
+            </button>
+            <button 
+              onClick={() => setScale((prev) => Math.max(0.4, prev - 0.2))}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              title="Thu nhỏ"
+            >
+              <FaSearchMinus className="text-gray-600" />
+              <span className="hidden sm:inline text-sm font-medium">Thu nhỏ</span>
+            </button>
+            <button 
+              onClick={() => setDualPage(!dualPage)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+              title={dualPage ? "Chế độ một trang" : "Chế độ hai trang"}
+            >
+              <FaBookOpen className="text-gray-600" />
+              <span className="hidden sm:inline text-sm font-medium">
+                {dualPage ? "Một trang" : "Hai trang"}
+              </span>
+            </button>
+          </div>
 
-        <div className="flex items-center gap-3 text-sm">
-          <button onClick={goToPrevPage} className="p-2 bg-gray-100 rounded hover:bg-gray-200">
-            <FaArrowLeft />
-          </button>
-          <span>
-            Trang {currentPage} / {totalPages}
-          </span>
-          <button onClick={goToNextPage} className="p-2 bg-gray-100 rounded hover:bg-gray-200">
-            <FaArrowRight />
-          </button>
-        </div>
+          {/* Page Navigation */}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={goToPrevPage}
+              disabled={currentPage <= 1}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 
+                       disabled:cursor-not-allowed rounded-lg transition-colors"
+            >
+              <FaArrowLeft className="text-gray-600" />
+              <span className="hidden sm:inline text-sm font-medium">Trang trước</span>
+            </button>
+            <div className="text-sm font-medium text-gray-700">
+              Trang <span className="text-teal-600">{currentPage}</span> / {totalPages}
+            </div>
+            <button 
+              onClick={goToNextPage}
+              disabled={currentPage >= totalPages}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 
+                       disabled:cursor-not-allowed rounded-lg transition-colors"
+            >
+              <span className="hidden sm:inline text-sm font-medium">Trang sau</span>
+              <FaArrowRight className="text-gray-600" />
+            </button>
+          </div>
 
-        <div>
-          <button onClick={handleDownload} className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-2">
+          {/* Download Button */}
+          <button 
+            onClick={handleDownload}
+            className="flex items-center gap-2 px-6 py-2 bg-teal-600 hover:bg-teal-700 text-white 
+                     rounded-lg transition-colors shadow-sm"
+          >
             <FaDownload />
-            <span className="hidden sm:inline">Tải xuống</span>
+            <span className="hidden sm:inline text-sm font-medium">Tải xuống PDF</span>
           </button>
         </div>
       </div>
 
+      {/* PDF Viewer */}
       <div className="w-full flex justify-center">
         <div
           ref={containerRef}
-          className={`pdf-container flex ${dualPage ? "flex-row" : "flex-col"} w-full gap-4 border shadow-lg rounded-lg overflow-hidden bg-white p-4`}
+          className={`pdf-container flex ${dualPage ? "flex-row" : "flex-col"} w-full gap-6 
+                     bg-white border border-gray-200 shadow-lg rounded-xl p-8`}
         />
       </div>
     </div>

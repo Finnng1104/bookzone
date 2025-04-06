@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FaHeart, FaBookOpen, FaStar } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { FaHeart, FaBookOpen, FaStar, FaEye, FaDownload, FaRegHeart } from "react-icons/fa";
 import { usePostWishlist } from "@/hooks/useWishlist";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -13,8 +12,8 @@ axios.defaults.withCredentials = true;
 import { IBook } from "@/types/book.interface";
 import RelatedBooks from "@/components/ui/RelatedBooks";
 import ReviewSection from "@/components/ui/ReviewSection";
-
 import toast from "react-hot-toast";
+
 const BookDetail = () => {
   const router = useRouter();
   const { mutateAsync: postwishlist } = usePostWishlist();
@@ -23,11 +22,12 @@ const BookDetail = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("description");
-
   const [hasShownError, setHasShownError] = useState(false);
+
   useEffect(() => {
     setHasShownError(false);
   }, [isFavorite]);
+
   useEffect(() => {
     if (!slug) return;
 
@@ -67,33 +67,33 @@ const BookDetail = () => {
       router.push("/login");
       return;
     }
-  
+
     const user = JSON.parse(userCookie);
-  
+
     if (!user.id || !book?._id) {
       alert("Không đủ thông tin người dùng hoặc sách.");
       return;
     }
-  
+
     if (isFavorite) {
       if (!hasShownError) {
         toast.error("Sách đã có trong danh sách yêu thích.");
-        setHasShownError(true); // Đánh dấu đã hiển thị thông báo lỗi
+        setHasShownError(true);
         return;
       }
       return;
     }
-  
+
     try {
       const response = await postwishlist({
         userId: user.id,
         bookId: book._id,
       });
-  
+
       if (response?.status === "Success") {
         toast.success("Đã thêm vào danh sách yêu thích!");
-        setIsFavorite(true);  // Đánh dấu là yêu thích
-        setHasShownError(false);  // Reset trạng thái lỗi khi thêm thành công
+        setIsFavorite(true);
+        setHasShownError(false);
         router.push("/wishlist");
       } else {
         alert("Thêm vào yêu thích thất bại.");
@@ -101,148 +101,185 @@ const BookDetail = () => {
     } catch (error) {
       console.error("Lỗi khi thêm yêu thích:", error);
       toast.error("Sách đã có trong danh sách yêu thích");
-      setHasShownError(true);  // Đánh dấu đã hiển thị thông báo lỗi
+      setHasShownError(true);
     }
   };
 
-  
-  
   const handlenavigatewishlish = () => {
     router.push("/wishlist");
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
-        <p className="ml-3 text-gray-500">Đang tải dữ liệu sách...</p>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (!book) {
     return (
-      <p className="text-center text-red-500 py-10">Không tìm thấy sách!</p>
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy sách!</h2>
+          <p className="text-gray-600">Sách bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+          <Link href="/" className="mt-4 inline-block px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+            Quay về trang chủ
+          </Link>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="w-full lg:container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="col-span-1 flex justify-center">
-          <div className="w-full max-w-xs">
-            <Image
-              src={book.coverImage || "/images/default-book-cover.jpg"}
-              alt={book.title}
-              priority
-              width={0}
-              height={0}
-              sizes="100vw"
-              className="w-full h-auto rounded-lg shadow-md object-cover"
-            />
-          </div>
-        </div>
-
-        <div className="col-span-2">
-          <h1 className="text-2xl font-bold">{book.title}</h1>
-          <p className="text-gray-500 text-sm mt-1">
-            {book.views} lượt xem • {book.favorites} yêu thích • ⭐ {book.rating}
-          </p>
-
-          <p className="mt-4">
-            Sách của tác giả <span className="text-pink-600 font-semibold">{book.author}</span>. Mời bạn đọc ngay.
-          </p>
-
-          <div className="mt-6 space-y-2 text-gray-700">
-            <p><strong>Thể loại:</strong> {book.category?.join(", ") || "Chưa phân loại"}</p>
-            {book.series && <p><strong>Bộ sách:</strong> {book.series}</p>}
-            {book.source && <p><strong>Nguồn:</strong> {book.source}</p>}
-          </div>
-
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              href={book.formats?.pdf ? `/doc-sach/${book.slug}` : "#"}
-              className={`px-5 py-3 rounded-lg flex items-center gap-2 text-white transition ${
-                book.formats?.pdf ? "bg-pink-600 hover:bg-pink-700" : "bg-gray-400 cursor-not-allowed"
-              }`}
-            >
-              <FaBookOpen /> Đọc Sách Online
-            </Link>
-
-            <button onClick={handleDownload} className="bg-red-600 text-white px-5 py-3 rounded-lg hover:bg-red-700 flex items-center gap-2 transition">
-              ⬇️ Tải Xuống Ngay
-            </button>
-
-            <button
-              disabled={hasShownError}
-              onClick={handleAddToWishlist}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg text-white transition ${
-                isFavorite || hasShownError
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-gray-500 hover:bg-gray-600"
-              }`}
-            >
-              <FaHeart />
-              {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
-            </button>
-
-
-            <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2" onClick={handlenavigatewishlish}>
-              <FaBookOpen /> Xem Danh Sách Yêu Thích
-            </button>
-          </div>
-
-          <div className="mt-6 bg-green-100 text-green-800 text-sm rounded-lg p-4 flex flex-col gap-2">
-            <div className="flex items-start gap-2">
-              <FaStar className="text-yellow-500 mt-1" />
-              <p>Nếu Bạn có điều kiện, hãy mua sách giấy</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-b from-teal-600 to-teal-800 text-white py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            {/* Book Cover */}
+            <div className="w-full md:w-1/3 lg:w-1/4">
+              <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                <Image
+                  src={book.coverImage || "/images/default-book-cover.jpg"}
+                  alt={book.title}
+                  priority
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
-            <div className="flex items-start gap-2">
-              <FaStar className="text-yellow-500 mt-1" />
-              <p>Sách ebook được sưu tầm từ Internet, Bản quyền sách thuộc về Tác giả & Nhà xuất bản</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <FaStar className="text-yellow-500 mt-1" />
-              <p>Chúng mình có gắn quảng cáo, vì thế sẽ gây chút bất tiện. Mong các bạn đọc thông cảm</p>
+
+            {/* Book Info */}
+            <div className="flex-1">
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">{book.title}</h1>
+              <p className="text-teal-200 mb-4">bởi <span className="font-semibold">{book.author}</span></p>
+
+              <div className="flex items-center gap-6 text-teal-100 mb-6">
+                <div className="flex items-center gap-2">
+                  <FaEye className="text-teal-300" />
+                  <span>{book.views} lượt xem</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaHeart className="text-teal-300" />
+                  <span>{book.favorites} yêu thích</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FaStar className="text-yellow-400" />
+                  <span>{book.rating}</span>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-8 text-teal-100">
+                <p><strong className="text-white">Thể loại:</strong> {book.category?.join(" • ") || "Chưa phân loại"}</p>
+                {book.series && <p><strong className="text-white">Bộ sách:</strong> {book.series}</p>}
+                {book.source && <p><strong className="text-white">Nguồn:</strong> {book.source}</p>}
+              </div>
+
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  href={book.formats?.pdf ? `/doc-sach/${book.slug}` : "#"}
+                  className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-colors ${
+                    book.formats?.pdf
+                      ? "bg-white text-teal-700 hover:bg-teal-100"
+                      : "bg-gray-400 text-white cursor-not-allowed"
+                  }`}
+                >
+                  <FaBookOpen /> Đọc Sách Online
+                </Link>
+
+                <button
+                  onClick={handleDownload}
+                  className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <FaDownload /> Tải Xuống PDF
+                </button>
+
+                <button
+                  disabled={hasShownError}
+                  onClick={handleAddToWishlist}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
+                    isFavorite || hasShownError
+                      ? "bg-red-500 hover:bg-red-600 text-white"
+                      : "bg-white text-teal-700 hover:bg-teal-100"
+                  }`}
+                >
+                  {isFavorite ? <FaHeart /> : <FaRegHeart />}
+                  {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="mt-12">
-        <div className="flex gap-4 border-b mb-4">
-          <button onClick={() => setActiveTab("description")} className={`pb-2 ${activeTab === "description" ? "border-b-2 border-pink-600 text-pink-600" : "text-gray-600"}`}>Mô tả</button>
-          <button onClick={() => setActiveTab("author")} className={`pb-2 ${activeTab === "author" ? "border-b-2 border-pink-600 text-pink-600" : "text-gray-600"}`}>Giới thiệu tác giả</button>
-          <button onClick={() => setActiveTab("reviews")} className={`pb-2 ${activeTab === "reviews" ? "border-b-2 border-pink-600 text-pink-600" : "text-gray-600"}`}>Đánh giá sách</button>
+      {/* Content Section */}
+      <div className="container mx-auto px-4 py-8">
+        {/* Tabs */}
+        <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
+          <div className="flex border-b">
+            {["description", "author", "reviews"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`flex-1 py-4 text-center font-medium transition-colors ${
+                  activeTab === tab
+                    ? "text-teal-600 border-b-2 border-teal-600"
+                    : "text-gray-600 hover:text-teal-600"
+                }`}
+              >
+                {tab === "description" && "Mô tả sách"}
+                {tab === "author" && "Về tác giả"}
+                {tab === "reviews" && "Đánh giá"}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-6">
+            {activeTab === "description" && (
+              <div className="prose max-w-none text-gray-700">
+                <p>{book.description || "Chưa có mô tả cho sách này."}</p>
+              </div>
+            )}
+
+            {activeTab === "author" && (
+              <div className="text-gray-700">
+                <h2 className="text-xl font-bold mb-2">Giới thiệu tác giả</h2>
+                <p>
+                  <span className="font-semibold">{book.author}</span> là một nhà văn nổi tiếng với nhiều tác phẩm được yêu thích.
+                </p>
+              </div>
+            )}
+
+            {activeTab === "reviews" && <ReviewSection />}
+          </div>
         </div>
 
-        <div className="bg-gray-100 rounded-lg p-6">
-          {activeTab === "description" && (
-            <div className="text-gray-700">
-              <p>{book.description || "Chưa có mô tả cho sách này."}</p>
-            </div>
-          )}
-
-          {activeTab === "author" && (
-            <div className="text-gray-700">
-              <h2 className="text-xl font-bold mb-2">✍️ Giới thiệu tác giả</h2>
-              <p>
-                <span className="font-semibold">{book.author}</span> là một nhà văn nổi tiếng với nhiều tác phẩm được yêu thích.
-              </p>
-            </div>
-          )}
-
-          {activeTab === "reviews" && <ReviewSection />}
+        {/* Notice Box */}
+        <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 mb-8">
+          <h3 className="text-teal-800 font-semibold mb-4">Lưu ý quan trọng</h3>
+          <div className="space-y-3">
+            {[
+              "Nếu bạn có điều kiện, hãy mua sách giấy để ủng hộ tác giả.",
+              "Sách ebook được sưu tầm từ Internet. Bản quyền thuộc về Tác giả & Nhà xuất bản.",
+              "Website có gắn quảng cáo để duy trì hoạt động. Mong bạn đọc thông cảm.",
+            ].map((note, idx) => (
+              <div key={idx} className="flex items-start gap-3">
+                <FaStar className="text-yellow-500 mt-1 flex-shrink-0" />
+                <p className="text-teal-700">{note}</p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Related Books */}
+        {book.category && book.category.length > 0 && (
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Sách liên quan</h2>
+            <RelatedBooks category={book.category[0]} />
+          </div>
+        )}
       </div>
-
-      {/* Related books */}
-      {book.category && book.category.length > 0 && (
-        <RelatedBooks category={book.category[0]} />
-      )}
     </div>
   );
 };
