@@ -62,7 +62,7 @@ const Wishlist = () => {
         // Cập nhật lại danh sách sau khi xóa
         const updatedBooks = books.filter(book => book.id !== id);
         setBooks(updatedBooks);  // Cập nhật state books
-        queryClient.invalidateQueries(['wishlists']);
+        queryClient.invalidateQueries(['wishlists'] as const);
       },
       onError: (error) => {
         console.error('Lỗi khi xoá wishlist:', error);
