@@ -14,11 +14,9 @@ const queryClient = new QueryClient();
 export default function RootLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-  const isAuthPage = [
-    "/login",
-    "/register",
-    "/reset-password"
-  ].some((path) => pathname?.startsWith(path));
+  const isAuthPage = ["/login", "/register", "/reset-password", "/doc-sach"].some((path) =>
+    pathname?.startsWith(path)
+  );
 
   return (
     <html lang="vi">
@@ -30,39 +28,38 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           {!isAuthPage && <BackToTop />}
 
           <Toaster
-  position="top-center"
-  reverseOrder={false}
-  toastOptions={{
-    // Style chung
-    style: {
-      borderRadius: "8px",
-      background: "#333",
-      color: "#fff",
-      padding: "12px 16px",
-      fontSize: "14px",
-    },
-    success: {
-      style: {
-        background: "#22c55e", // màu xanh thành công
-        color: "#fff",
-      },
-      iconTheme: {
-        primary: "#fff",
-        secondary: "#22c55e",
-      },
-    },
-    error: {
-      style: {
-        background: "#ef4444", // màu đỏ lỗi
-        color: "#fff",
-      },
-      iconTheme: {
-        primary: "#fff",
-        secondary: "#ef4444",
-      },
-    },
-  }}
-/>
+            position="top-center"
+            reverseOrder={false}
+            toastOptions={{
+              style: {
+                borderRadius: "8px",
+                background: "#333",
+                color: "#fff",
+                padding: "12px 16px",
+                fontSize: "14px",
+              },
+              success: {
+                style: {
+                  background: "#22c55e",
+                  color: "#fff",
+                },
+                iconTheme: {
+                  primary: "#fff",
+                  secondary: "#22c55e",
+                },
+              },
+              error: {
+                style: {
+                  background: "#ef4444",
+                  color: "#fff",
+                },
+                iconTheme: {
+                  primary: "#fff",
+                  secondary: "#ef4444",
+                },
+              },
+            }}
+          />
         </body>
       </QueryClientProvider>
     </html>

@@ -15,8 +15,10 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import Cookies from "js-cookie";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 const Header = () => {
+  const pathname = usePathname();
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState<"title" | "author">("title");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -96,30 +98,38 @@ const Header = () => {
             />
           </Link>
           <nav className="hidden lg:flex flex-grow justify-center space-x-8">
-            <Link
-              href="/"
-              className="text-primary hover:text-opacity-80 font-medium"
-            >
-              Trang chủ
-            </Link>
-            <Link
-              href="/thu-vien-sach"
-              className="text-primary hover:text-opacity-80 font-medium"
-            >
-              Thư viện sách
-            </Link>
-            <Link
-              href="/bai-viet"
-              className="text-primary hover:text-opacity-80 font-medium"
-            >
-              Bài viết
-            </Link>
+            {[
+              { name: "Trang chủ", link: "/" },
+              { name: "Thư viện sách", link: "/thu-vien-sach" },
+              { name: "Bài viết", link: "/bai-viet" },
+            ].map((item) => {
+              const isActive = pathname === item.link;
+
+              return (
+                <Link
+                  key={item.link}
+                  href={item.link}
+                  className={`relative font-medium transition-all duration-300 group
+          ${isActive ? "text-black" : "text-primary hover:text-secondary"}
+        `}
+                >
+                  {item.name}
+
+                  {/* Underline effect */}
+                  <span
+                    className={`absolute left-0 bottom-0 h-0.5 bg-secondary transition-all duration-300
+            ${isActive ? "" : "w-0 group-hover:w-full"}
+          `}
+                  ></span>
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="hidden md:flex items-center bg-gray-50 border border-gray-200 rounded-full w-1/3 h-[42px] shadow-sm relative overflow-hidden">
             <div className="relative h-full">
               <select
-                className="w-28 h-full pl-4 pr-6 text-sm text-gray-700 bg-transparent outline-none appearance-none border-r border-gray-300"
+                className="w-28 h-full cursor-pointer pl-4 pr-6 text-sm text-gray-700 bg-transparent outline-none appearance-none border-r border-gray-300"
                 value={searchType}
                 onChange={(e) =>
                   setSearchType(e.target.value as "title" | "author")
@@ -173,7 +183,7 @@ const Header = () => {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="flex items-center space-x-2 text-primary hover:text-opacity-80"
                 >
-                 <Image
+                  <Image
                     src={user.avatar ?? "/default-avatar.jpg"}
                     alt="User profile picture"
                     width={30}

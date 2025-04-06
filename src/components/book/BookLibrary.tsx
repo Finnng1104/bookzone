@@ -21,7 +21,6 @@ const BookLibrary = () => {
     const query = searchParams.get("q");
     const type = searchParams.get("type");
   
-    // Đồng bộ filter khi có query param
     if (type === "category" && query) {
       setFilter(query);
     }
@@ -73,12 +72,16 @@ const BookLibrary = () => {
   const pathname = usePathname();
   
   const handleFilterChange = (value: string) => {
+    if (value === filter) return; 
     setFilter(value);
     setCurrentPage(1);
   
-    // Cập nhật URL khi filter thay đổi
-    const query = value !== "all" ? `?type=category&q=${encodeURIComponent(value)}` : "";
-    router.push(`${pathname}${query}`);
+    if (value === "all") {
+      router.replace(pathname); 
+    } else {
+      const query = `?type=category&q=${encodeURIComponent(value)}`;
+      router.push(`${pathname}${query}`);
+    }
   };
 
   return (
@@ -137,7 +140,6 @@ const BookLibrary = () => {
                 title={book.title}
                 slug={book.slug}
                 category={book.category} 
-                favorites={book.favorites}
                 views={book.views}
                 rating={book.rating}
               />

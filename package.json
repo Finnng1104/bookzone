@@ -18,7 +18,7 @@
     "dotenv": "^16.4.7",
     "js-cookie": "^3.0.5",
     "next": "15.2.4",
-    "pdfjs-dist": "^3.4.120",
+    "pdfjs-dist": "^3.11.174",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hot-toast": "^2.5.2",

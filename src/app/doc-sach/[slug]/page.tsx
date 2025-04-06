@@ -1,14 +1,14 @@
 "use client";
 
-import PDFReader from "@/components/ui/PDFReader";
 import { useParams } from "next/navigation";
-
+import CustomPDFViewer from "@/components/ui/CustomPDFViewer";
 const ReadBookPage = () => {
   const { slug } = useParams();
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <PDFReader slug={slug as string} />
+
+      <CustomPDFViewer slug={slug as string} />
     </div>
   );
 };

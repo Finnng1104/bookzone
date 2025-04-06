@@ -101,8 +101,6 @@ const BookList: React.FC<BookListProps> = ({
                       title={book.title}
                       slug={book.slug}
                       category={book.category || ["Chưa phân loại"]}
-                      highlight={book.rating >= 4}
-                      favorites={book.favorites}
                       views={book.views}
                       rating={book.rating}
                     />
@@ -121,8 +119,6 @@ const BookList: React.FC<BookListProps> = ({
                   title={book.title}
                   slug={book.slug}
                   category={book.category || ["Chưa phân loại"]}
-                  highlight={book.rating >= 4}
-                  favorites={book.favorites}
                   views={book.views}
                   rating={book.rating}
                 />
