@@ -1,7 +1,13 @@
+"use client";
+
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaHeart, FaStar, FaEye } from "react-icons/fa";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import { FaHeart, FaStar, FaEye, FaRegHeart } from "react-icons/fa";
+import { usePostWishlist, useDeleteWishlist, useGetWishlist } from "@/hooks/useWishlist";
+import toast from "react-hot-toast";
 
 interface BookCardProps {
   image: string;
@@ -13,6 +19,8 @@ interface BookCardProps {
   views?: number;
   isNew?: boolean;
   isHot?: boolean;
+  bookId: string;
+  userId: string;
 }
 
 const BookCard: React.FC<BookCardProps> = ({
@@ -25,8 +33,69 @@ const BookCard: React.FC<BookCardProps> = ({
   views = 0,
   isNew = false,
   isHot = false,
+  bookId,
+  userId,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [hasShownError, setHasShownError] = useState(false);
+  const [loadingWishlist, setLoadingWishlist] = useState(false);
+
+  const router = useRouter();
+  const { data: wishlistData, refetch } = useGetWishlist(userId);
+  const { mutateAsync: addToWishlistAsync } = usePostWishlist();
+  const { mutateAsync: removeFromWishlistAsync } = useDeleteWishlist();
+
+  const isInWishlist = wishlistData?.wishlist?.some((item: any) => item.bookId === bookId);
+
+  const handleWishlistClick = async () => {
+    try {
+      setLoadingWishlist(true);
+    
+      const userCookie = Cookies.get("user");
+      if (!userCookie) {
+        toast.error("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
+        router.push("/login");
+        return;
+      }
+    
+      const user = JSON.parse(userCookie);
+    
+      if (!user.id || !bookId) {
+        toast.error("Không đủ thông tin người dùng hoặc sách.");
+        return;
+      }
+    
+      if (isInWishlist) {
+        const wishlistItem = wishlistData?.wishlist?.find((item: any) => item.bookId === bookId);
+        if (wishlistItem) {
+          await removeFromWishlistAsync(wishlistItem._id);
+          toast.success("Đã xoá khỏi danh sách yêu thích!");
+          refetch();
+        }
+      } else {
+        const response = await addToWishlistAsync({ bookId, userId: user.id });
+        if (response?.status === "Success") {
+          toast.success("Đã thêm vào danh sách yêu thích!");
+          setHasShownError(false);
+          refetch();
+          router.push("/wishlist");
+        }
+      }
+    } catch (error: any) {
+      console.error("Lỗi khi xử lý yêu thích:", error);
+    
+      if (error?.response?.data?.message) {
+        console.log("error", error);
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Có lỗi xảy ra khi xử lý yêu thích.");
+      }
+    
+      setHasShownError(true);
+    } finally {
+      setLoadingWishlist(false);
+    }
+  };
 
   const displayCategories =
     isHot || category.includes("Hot")
@@ -38,9 +107,7 @@ const BookCard: React.FC<BookCardProps> = ({
       {/* Product Image */}
       <div className="relative aspect-[3/4] overflow-hidden shadow-sm">
         <Link href={`/ebook/${slug}`}>
-          {!imgLoaded && (
-            <div className="absolute inset-0 bg-gray-200 animate-pulse" />
-          )}
+          {!imgLoaded && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
           <Image
             src={image || "/images/default-product.jpg"}
             alt={title}
@@ -75,8 +142,20 @@ const BookCard: React.FC<BookCardProps> = ({
 
         {/* Quick Actions */}
         <div className="absolute bottom-[-50px] left-0 right-0 flex justify-end pr-2 transition-all duration-500 opacity-0 group-hover:bottom-2 group-hover:opacity-100">
-          <button className="bg-white p-2 rounded-full hover:bg-secondary hover:text-white transition-all duration-300 shadow-md transform hover:scale-110">
-            <FaHeart size={16} />
+          <button
+            className={`bg-white p-2 rounded-full hover:bg-secondary hover:text-white transition-all duration-300 shadow-md transform hover:scale-110 ${
+              isInWishlist ? "text-red-500" : "text-gray-500"
+            } ${loadingWishlist ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={handleWishlistClick}
+            disabled={loadingWishlist}
+          >
+            {loadingWishlist ? (
+              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
+            ) : isInWishlist ? (
+              <FaHeart size={16} />
+            ) : (
+              <FaRegHeart size={16} />
+            )}
           </button>
         </div>
       </div>
@@ -109,15 +188,11 @@ const BookCard: React.FC<BookCardProps> = ({
                   <FaStar
                     key={i}
                     size={12}
-                    className={
-                      i < Math.floor(rating || 0)
-                        ? "text-yellow-400"
-                        : "text-gray-300"
-                    }
+                    className={i < Math.floor(rating) ? "text-yellow-400" : "text-gray-300"}
                   />
                 ))}
               </div>
-              <span className="text-xs text-gray-500">({rating || 0})</span>
+              <span className="text-xs text-gray-500">({rating})</span>
             </div>
 
             {/* Views */}

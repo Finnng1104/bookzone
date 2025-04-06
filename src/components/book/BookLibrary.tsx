@@ -136,6 +136,8 @@ const BookLibrary = () => {
             {books.map((book) => (
               <BookCard
                 key={book._id}
+                bookId={book._id}
+                userId={book.userId}
                 image={book.coverImage || "/default-book.jpg"}
                 title={book.title}
                 slug={book.slug}

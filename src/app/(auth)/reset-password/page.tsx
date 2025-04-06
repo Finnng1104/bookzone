@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import InputField from "@/components/auth/InputField";
 import { useChangePassword } from "@/hooks/useAuth";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
+import toast from "react-hot-toast";
+import { isAxiosError } from "axios";
 
 const ResetPassword: React.FC = () => {
-  const [showPassword, setShowPassword ] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     otp: "",
@@ -21,8 +23,6 @@ const ResetPassword: React.FC = () => {
     confirmPassword: "",
   });
 
-  const [message, setMessage] = useState("");  
-
   const router = useRouter();
   const { mutate, status } = useChangePassword();
 
@@ -34,11 +34,10 @@ const ResetPassword: React.FC = () => {
     const formErrors = { otp: "", newPassword: "", confirmPassword: "" };
     let isValid = true;
 
-    
     if (!formData.otp) {
       formErrors.otp = "❌ OTP là bắt buộc.";
       isValid = false;
-    } else if (formData.otp.length !== 6) { 
+    } else if (formData.otp.length !== 6) {
       formErrors.otp = "❌ OTP không đúng.";
       isValid = false;
     }
@@ -74,31 +73,36 @@ const ResetPassword: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // log dữ liệu khi submit
-    console.log("Submitted Data:", formData);
     if (!validateForm()) return;
-    
-    mutate({ otp: formData.otp, newPassword: formData.newPassword }, {
-      onSuccess: (data) => {
-        if (data.status) {
-          setMessage(`✅ ${data.message || "Đổi mật khẩu thành công!"}`);
-          setTimeout(() => router.push("/login"), 2000); 
-        } else {
+
+    mutate(
+      { otp: formData.otp, newPassword: formData.newPassword },
+      {
+        onSuccess: (data) => {
+          if (data.status) {
+            toast.success(data.message || "Đổi mật khẩu thành công!");
+            setTimeout(() => router.push("/login"), 1500);
+          } else {
+            toast.error(data.message || "Có lỗi xảy ra!");
+          }
+        },
+        onError: (error: Error) => {
+          if (isAxiosError(error)) {
+            if (error.response?.data?.message?.includes("OTP không đúng")) {
+              setErrors((prevErrors) => ({
+                ...prevErrors,
+                otp: "❌ OTP không đúng. Vui lòng kiểm tra lại.",
+              }));
+              return;
+            }
         
-          setMessage(`❌ ${data.message || "Có lỗi xảy ra!"}`);
-        }
-      },
-      onError: (error: any) => {
-        if (error?.response?.data?.message?.includes('OTP không đúng')) {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            otp: "❌ OTP không đúng. Vui lòng kiểm tra lại."
-          }));
-        } else {
-          setMessage(`❌ ${error.message || "Có lỗi xảy ra!"}`);
-        }
+            toast.error(error.response?.data?.message || error.message || "Có lỗi xảy ra!");
+          } else {
+            toast.error(error.message || "Có lỗi xảy ra!");
+          }
+        } 
       }
-    });
+    );
   };
 
   return (
@@ -117,12 +121,6 @@ const ResetPassword: React.FC = () => {
             Nhập mật khẩu mới để tiếp tục.
           </p>
 
-          {message && (
-            <p className={`text-sm ${message.startsWith("❌") ? "text-red-500" : "text-green-500"} mb-4`}>
-              {message}
-            </p>
-          )}
-
           <form onSubmit={handleSubmit}>
             <InputField
               label="Nhập OTP"
@@ -130,46 +128,50 @@ const ResetPassword: React.FC = () => {
               name="otp"
               value={formData.otp}
               onChange={handleChange}
-            
             />
             {errors.otp && <p className="text-red-500 text-sm">{errors.otp}</p>}
 
+            {/* Mật khẩu mới */}
             <div className="relative flex justify-end mt-4">
-            <InputField
-              label="Mật khẩu mới"
-              type={showPassword ? "text" : "password"}
-              name="newPassword"
-              value={formData.newPassword}
-              onChange={handleChange}
-            />
-            
-             <button
-                      type="button"
-                      className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
-             </button>
+              <InputField
+                label="Mật khẩu mới"
+                type={showPassword ? "text" : "password"}
+                name="newPassword"
+                value={formData.newPassword}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+              </button>
             </div>
-            {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword}</p>}
+            {errors.newPassword && (
+              <p className="text-red-500 text-sm">{errors.newPassword}</p>
+            )}
+
+            {/* Xác nhận mật khẩu */}
             <div className="relative flex justify-end mt-4">
-            <InputField
-              label="Xác nhận mật khẩu"
-              type={showConfirmPassword ? "text" : "password"}
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-            <button
-                      type="button"
-                      className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
-             </button>
+              <InputField
+                label="Xác nhận mật khẩu"
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+              </button>
             </div>
-           
-            {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+            )}
 
             <button
               type="submit"

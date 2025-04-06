@@ -19,6 +19,7 @@ const BASE_URL_DELETE_WISHLIST = process.env.NEXT_PUBLIC_DELETEWISHLIST;
   export const usePostWishlist = () => {
     return useMutation({
       mutationFn: async (data: WishlistInput) => {
+        console.log("Data gửi lên Wishlist API:", data);
         const response = await axios.post(`${BASE_URL_POST_WISHLIST}`, data, {
           headers: {
             'Content-Type': 'application/json',
@@ -29,6 +30,7 @@ const BASE_URL_DELETE_WISHLIST = process.env.NEXT_PUBLIC_DELETEWISHLIST;
       },
     });
   }; 
+
 export const useDeleteWishlist = () => {
     return useMutation({
         mutationFn: async (id: string) => {
@@ -41,6 +43,7 @@ export const useDeleteWishlist = () => {
         },
     });
 }
+
 export const useGetWishlist = (userId: string) => {
     return useQuery({
       queryKey: ['wishlist', userId], 

@@ -12,12 +12,9 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import { IBook } from "@/types/book.interface";
 import RelatedBooks from "@/components/ui/RelatedBooks";
-<<<<<<< HEAD
 import ReviewSection from "@/components/ui/ReviewSection";
 
-=======
 import toast from "react-hot-toast";
->>>>>>> 4460dd3a7d2b484116300fab61165bf0f4a4b331
 const BookDetail = () => {
   const router = useRouter();
   const { mutateAsync: postwishlist } = usePostWishlist();
@@ -25,15 +22,12 @@ const BookDetail = () => {
   const [book, setBook] = useState<IBook | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
-<<<<<<< HEAD
   const [activeTab, setActiveTab] = useState("description");
 
-=======
   const [hasShownError, setHasShownError] = useState(false);
   useEffect(() => {
     setHasShownError(false);
   }, [isFavorite]);
->>>>>>> 4460dd3a7d2b484116300fab61165bf0f4a4b331
   useEffect(() => {
     if (!slug) return;
 
@@ -110,12 +104,9 @@ const BookDetail = () => {
       setHasShownError(true);  // Đánh dấu đã hiển thị thông báo lỗi
     }
   };
-<<<<<<< HEAD
 
-=======
   
   
->>>>>>> 4460dd3a7d2b484116300fab61165bf0f4a4b331
   const handlenavigatewishlish = () => {
     router.push("/wishlist");
   };
@@ -184,14 +175,6 @@ const BookDetail = () => {
               ⬇️ Tải Xuống Ngay
             </button>
 
-<<<<<<< HEAD
-            <button onClick={handleAddToWishlist} className={`flex items-center gap-2 px-5 py-3 rounded-lg text-white transition ${isFavorite ? "bg-red-600 hover:bg-red-700" : "bg-gray-500 hover:bg-gray-600"}`}>
-              <FaHeart /> {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
-            </button>
-
-            <button onClick={handlenavigatewishlish} className="bg-green-600 text-white px-5 py-3 rounded-lg hover:bg-green-700 flex items-center gap-2 transition">
-              📚 Xem Danh Sách Yêu Thích
-=======
             <button
               disabled={hasShownError}
               onClick={handleAddToWishlist}
@@ -208,7 +191,6 @@ const BookDetail = () => {
 
             <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2" onClick={handlenavigatewishlish}>
               <FaBookOpen /> Xem Danh Sách Yêu Thích
->>>>>>> 4460dd3a7d2b484116300fab61165bf0f4a4b331
             </button>
           </div>
 

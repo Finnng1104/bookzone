@@ -17,6 +17,7 @@ import {
 import Cookies from "js-cookie";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import toast from "react-hot-toast";
 const Header = () => {
   const pathname = usePathname();
   const [search, setSearch] = useState("");
@@ -46,9 +47,11 @@ const Header = () => {
       setUser(userData);
     }
   }, []);
+
   const handleLogout = () => {
     Cookies.remove("user");
     setUser(null);
+    toast.success("Bạn đã đăng xuất thành công!");
   };
   return (
     <>

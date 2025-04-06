@@ -17,6 +17,7 @@ export interface IBook {
   series?: string;
   source?: string;
   slug: string;
+  userId?: string;
 }
 
   export default IBook;

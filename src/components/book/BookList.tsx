@@ -16,7 +16,9 @@ interface Book {
   rating: number;
   favorites?: number;
   views?: number;
-  category?: string[];
+  category?: string[];  
+  _id: string;
+  userId: string;
 }
 
 interface BookListProps {
@@ -103,6 +105,8 @@ const BookList: React.FC<BookListProps> = ({
                       category={book.category || ["Chưa phân loại"]}
                       views={book.views}
                       rating={book.rating}
+                      bookId={book._id} 
+                      userId={book.userId}
                     />
                   </SwiperSlide>
                 ))}
@@ -121,6 +125,8 @@ const BookList: React.FC<BookListProps> = ({
                   category={book.category || ["Chưa phân loại"]}
                   views={book.views}
                   rating={book.rating}
+                  bookId={book._id} 
+                  userId={book.userId}
                 />
               ))}
             </div>
