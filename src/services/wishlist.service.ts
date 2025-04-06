@@ -2,7 +2,7 @@ import Wishlist from "../models/wishlish.model"; // Sửa chính tả: "wishlish
 import { IWishlist } from "../types/wishlist.interface";
 
 export class WishlistService {
-  // Lấy tất cả wishlist
+  
   async getAllWishlists(id?: unknown): Promise<IWishlist[]> {
     try {
       const wishlists = await Wishlist.find({userId: id});
@@ -14,14 +14,23 @@ export class WishlistService {
 
   // Tạo wishlist mới
   async createWishlist(wishlist: IWishlist): Promise<IWishlist> {
-    try {
+    try {   
+      let existingWishlist = await Wishlist.findOne({
+        bookId: wishlist.bookId,
+        userId: wishlist.userId,
+      });
+      if (existingWishlist) {
+        throw new Error("Sản phẩm đã có trong danh sách yêu thích.");
+      }
       const newWishlist = new Wishlist(wishlist);
       await newWishlist.save();
+      
       return newWishlist;
     } catch (error) {
       throw new Error("Error creating wishlist: " + (error as Error).message);
     }
   }
+  
 
   // Xóa wishlist
   async deleteWishlist(id: string): Promise<IWishlist | null> {

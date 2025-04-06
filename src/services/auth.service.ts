@@ -68,13 +68,17 @@ class AuthService {
 
   async forgotPassword(email: string) {
     const user = await UserModel.findOne({ email });
-    if (!user) return { status: false, message: "Email không tồn tại" };
-
+    if (!user) {
+      throw new Error("Email không tồn tại");
+    }
     const now = new Date();
     const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
     if ((user.otpSentCount ?? 0) >= 5 && user.lastOtpSentAt && user.lastOtpSentAt > oneHourAgo) {
-      return { status: false, message: "Vượt quá giới hạn gửi OTP. Vui lòng thử lại sau" };
-    }
+      const remainingMs = user.lastOtpSentAt.getTime() + 60 * 60 * 1000 - now.getTime();
+      const remainingMinutes = Math.floor(remainingMs / 1000 / 60);
+      const remainingSeconds = Math.floor((remainingMs / 1000) % 60);
+    throw new Error(`Vượt quá giới hạn gửi OTP. Vui lòng thử lại sau ${Math.ceil(remainingMinutes)} phút.`);
+  }
 
     const otp = crypto.randomInt(100000, 999999).toString();
     user.otp = otp;
@@ -123,7 +127,7 @@ class AuthService {
     });
 
     if (!user) {
-      return { status: false, message: "OTP không hợp lệ hoặc đã hết hạn" };
+      throw new Error("OTP không hợp lệ hoặc đã hết hạn");
     }
 
     user.password = await bcrypt.hash(newPassword, 10);
