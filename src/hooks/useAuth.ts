@@ -55,21 +55,6 @@ export const useLogin = () => {
     },
   });
 };
-// export const checkmailduplicate = async (email: string) => {
-//   try {
-//     console.log("Email being sent:", email);
-//     const response = await axios.post(`${BASE_URL_EMAILDUBPLICATE}`, { email: email });
-//     return response.data; 
-//   } catch (error) {
-//     if (axios.isAxiosError(error)) {
-//       console.error("Error checking email:", error.response?.data || error.message);
-//       throw new Error(error.response?.data?.message || "Lỗi kết nối đến server");
-//     } else {
-//       console.error("Unexpected error:", error);
-//       throw new Error("Có lỗi không mong muốn xảy ra");
-//     }
-//   }
-// };
 
 export const handleGoogleLogin = async (token: string) => {
   try {

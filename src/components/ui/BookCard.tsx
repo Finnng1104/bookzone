@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { FaEye, FaStar } from "react-icons/fa";
 
 interface BookCardProps {
   image: string;
@@ -63,9 +64,19 @@ const BookCard: React.FC<BookCardProps> = ({
             {title}
           </h3>
 
-          <div className="flex justify-center items-center gap-3 mt-2 text-sm text-gray-600">
-            {views !== undefined && <span>👁 {views}</span>}
-            {rating !== undefined && <span>⭐ {rating}</span>}
+          <div className="flex justify-center items-center gap-4 mt-3 text-sm text-gray-600">
+            {views !== undefined && (
+              <div className="flex items-center gap-1">
+                <FaEye size={14} className="text-gray-500" />
+                <span>{views}</span>
+              </div>
+            )}
+            {rating !== undefined && (
+              <div className="flex items-center gap-1">
+                <FaStar size={14} className="text-yellow-400" />
+                <span>{rating}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
