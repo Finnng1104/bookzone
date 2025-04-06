@@ -154,7 +154,6 @@ class AuthController {
         return;
       }
   
-      // Thực hiện thay đổi mật khẩu
       const result = await AuthService.changePassword(otp, newPassword);
       res.status(200).json(result);
     } catch (error: any) {
