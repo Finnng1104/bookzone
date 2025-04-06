@@ -87,29 +87,98 @@ export const deleteBook = async (req: Request<{ id: string }>, res: Response): P
   }
 };
 
-export const searchBooksByTitle = async (req: Request<{ title: string }>, res: Response): Promise<void> => {
+export const searchBooksByTitle = async (
+  req: Request<{ title: string }>,
+  res: Response
+): Promise<void> => {
   try {
-    const books = await BookService.searchBooksByTitle(req.params.title);
-    res.status(200).json({ success: true, data: books });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 30;
+
+    const { books, total } = await BookService.searchBooksByTitle(
+      req.params.title,
+      page,
+      limit
+    );
+
+    res.status(200).json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Lỗi khi tìm kiếm sách theo tiêu đề", error });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi tìm kiếm sách theo tiêu đề",
+      error,
+    });
   }
 };
 
-export const searchBooksByAuthor = async (req: Request<{ author: string }>, res: Response): Promise<void> => {
+export const searchBooksByAuthor = async (
+  req: Request<{ author: string }>,
+  res: Response
+): Promise<void> => {
   try {
-    const books = await BookService.searchBooksByAuthor(req.params.author);
-    res.status(200).json({ success: true, data: books });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 30;
+
+    const { books, total } = await BookService.searchBooksByAuthor(
+      req.params.author,
+      page,
+      limit
+    );
+
+    res.status(200).json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Lỗi khi tìm kiếm sách theo tác giả", error });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi tìm kiếm sách theo tác giả",
+      error,
+    });
   }
 };
 
-export const getBooksByCategory = async (req: Request<{ category: string }>, res: Response): Promise<void> => {
+export const getBooksByCategory = async (
+  req: Request<{ category: string }>,
+  res: Response
+): Promise<void> => {
   try {
-    const books = await BookService.getBooksByCategory(req.params.category);
-    res.status(200).json({ success: true, data: books });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 30;
+
+    const { books, total } = await BookService.getBooksByCategory(
+      req.params.category,
+      page,
+      limit
+    );
+
+    res.status(200).json({
+      success: true,
+      data: books,
+      pagination: {
+        total,
+        page,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Lỗi khi lấy sách theo danh mục", error });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy sách theo danh mục",
+      error,
+    });
   }
 };

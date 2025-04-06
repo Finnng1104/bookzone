@@ -33,14 +33,35 @@ export const deleteBook = async (id: string) => {
   return await Book.findByIdAndDelete(id);
 };
 
-export const searchBooksByTitle = async (title: string) => {
-  return await Book.find({ title: { $regex: title, $options: "i" } });
+export const searchBooksByTitle = async (title: string, page: number, limit: number) => {
+  const skip = (page - 1) * limit;
+
+  const [books, total] = await Promise.all([
+    Book.find({ title: { $regex: title, $options: "i" } }).skip(skip).limit(limit),
+    Book.countDocuments({ title: { $regex: title, $options: "i" } }),
+  ]);
+
+  return { books, total };
 };
 
-export const searchBooksByAuthor = async (author: string) => {
-  return await Book.find({ author: { $regex: author, $options: "i" } });
+export const searchBooksByAuthor = async (author: string, page: number, limit: number) => {
+  const skip = (page - 1) * limit;
+
+  const [books, total] = await Promise.all([
+    Book.find({ author: { $regex: author, $options: "i" } }).skip(skip).limit(limit),
+    Book.countDocuments({ author: { $regex: author, $options: "i" } }),
+  ]);
+
+  return { books, total };
 };
 
-export const getBooksByCategory = async (category: string) => {
-  return await Book.find({ category });
+export const getBooksByCategory = async (category: string, page: number, limit: number) => {
+  const skip = (page - 1) * limit;
+
+  const [books, total] = await Promise.all([
+    Book.find({ category }).skip(skip).limit(limit),
+    Book.countDocuments({ category }),
+  ]);
+
+  return { books, total };
 };

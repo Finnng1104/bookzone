@@ -34,7 +34,7 @@ class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await UserModel.findOne({ email }).select("fullname email password role");
+    const user = await UserModel.findOne({ email }).select("fullname email password role avatar");
   
     if (!user) return { status: false, message: "Email không tồn tại" };
   
@@ -44,13 +44,13 @@ class AuthService {
     const access_token = jwt.generalAccessToken({
       id: user._id.toString(),
       email: user.email,
-      isAdmin: user.role === "admin", 
+      isAdmin: user.role === "admin",
     });
   
     const refresh_token = jwt.generalRefreshToken({
       id: user._id.toString(),
       email: user.email,
-      isAdmin: user.role === "admin", 
+      isAdmin: user.role === "admin",
     });
   
     return {
@@ -61,10 +61,10 @@ class AuthService {
         fullname: user.fullname,
         email: user.email,
         role: user.role,
+        avatar: user.avatar,
       },
     };
   }
-  
 
   async forgotPassword(email: string) {
     const user = await UserModel.findOne({ email });
