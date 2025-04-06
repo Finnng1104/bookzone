@@ -23,21 +23,11 @@ interface WishlistItem {
 
 const Wishlist = () => {
   const queryClient = useQueryClient();
-
   const [books, setBooks] = useState<Book[]>([]);
   const userCookie = Cookies.get('user');
   const { data, isLoading, isError } = useGetWishlist(userCookie ? JSON.parse(userCookie).id : '');
   const deleteMutation = useDeleteWishlist();
-  const handleRemove = (id: string) => {
-    deleteMutation.mutate(id, {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['wishlists'] });
-      },
-      onError: (error) => {
-        console.error('Lỗi khi xoá wishlist:', error);
-      },
-    })
-  }
+ 
   useEffect(() => {
     const fetchBookDetails = async () => {
       if (data?.wishlists?.length) {
@@ -65,7 +55,20 @@ const Wishlist = () => {
 
   if (isLoading) return <div>Đang tải danh sách...</div>;
   if (isError) return <div>Có lỗi xảy ra khi lấy danh sách yêu thích</div>;
-
+  const handleRemove = (id: string) => {
+    console.log('Xoá sản phẩm với ID: ', id);
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        // Cập nhật lại danh sách sau khi xóa
+        const updatedBooks = books.filter(book => book.id !== id);
+        setBooks(updatedBooks);  // Cập nhật state books
+        queryClient.invalidateQueries(['wishlists'] as const);
+      },
+      onError: (error) => {
+        console.error('Lỗi khi xoá wishlist:', error);
+      },
+    })
+  }
   return (
     <div className="container mx-auto p-6 py-10 flex flex-col md:flex-row gap-6">
       <Sidebar />
