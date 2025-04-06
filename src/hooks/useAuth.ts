@@ -10,7 +10,7 @@ const BASE_URL_REGISTER = process.env.NEXT_PUBLIC_REGISTER;
 // const BASE_URL_EMAILDUBPLICATE = process.env.NEXT_PUBLIC_EMAILDUPLICATE;
 const BASE_URL_LOGIN_GOOGLE = process.env.NEXT_PUBLIC_LOGIN_GOOGLE;
 const BASE_URL_FORGOTPASSWORD = process.env.NEXT_PUBLIC_FORGOTPASSWORD;
-const BASE_URL_CHANGE_PASSWORD = process.env.NEXT_PUBLIC_CHANGEPASSWORD
+const BASE_URL_CHANGE_PASSWORD = process.env.NEXT_PUBLIC_RESETPASSWORD
 interface RegisterData {
   fullname: string;
   email: string; 
@@ -88,7 +88,7 @@ export const useForgotPassword = () => {
 export const useChangePassword = () => {
   return useMutation<ChangePasswordResponse, Error, ChangePasswordPayload>({
     mutationFn: async (data: ChangePasswordPayload) => {
-      console.log("Sending data to API:", data);  // Log the data being sent to the server
+      console.log("Sending data to API:", data); 
       const response = await axios.put(`${BASE_URL_CHANGE_PASSWORD}`, data, {
         withCredentials: true,
         headers: {

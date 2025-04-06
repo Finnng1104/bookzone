@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import InputField from "@/components/auth/InputField";
 import { useChangePassword } from "@/hooks/useAuth";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
 const ResetPassword: React.FC = () => {
+  const [showPassword, setShowPassword ] = useState(false); 
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     otp: "",
     newPassword: "",
@@ -31,9 +34,12 @@ const ResetPassword: React.FC = () => {
     const formErrors = { otp: "", newPassword: "", confirmPassword: "" };
     let isValid = true;
 
-    // Kiểm tra nếu có trường nào còn thiếu
+    
     if (!formData.otp) {
       formErrors.otp = "❌ OTP là bắt buộc.";
+      isValid = false;
+    } else if (formData.otp.length !== 6) { 
+      formErrors.otp = "❌ OTP không đúng.";
       isValid = false;
     }
 
@@ -57,11 +63,10 @@ const ResetPassword: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    // Kiểm tra form
+    // log dữ liệu khi submit
+    console.log("Submitted Data:", formData);
     if (!validateForm()) return;
   
-    // Gọi API đổi mật khẩu
     mutate({ otp: formData.otp, newPassword: formData.newPassword }, {
       onSuccess: (data) => {
         if (data.status) {
@@ -72,10 +77,15 @@ const ResetPassword: React.FC = () => {
           setMessage(`❌ ${data.message || "Có lỗi xảy ra!"}`);
         }
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (error: any) => {
-        // Xử lý lỗi chung
-        setMessage(`❌ ${error.message || "Có lỗi xảy ra!"}`);
+        if (error?.response?.data?.message?.includes('OTP không đúng')) {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            otp: "❌ OTP không đúng. Vui lòng kiểm tra lại."
+          }));
+        } else {
+          setMessage(`❌ ${error.message || "Có lỗi xảy ra!"}`);
+        }
       }
     });
   };
@@ -109,25 +119,45 @@ const ResetPassword: React.FC = () => {
               name="otp"
               value={formData.otp}
               onChange={handleChange}
+              required
             />
             {errors.otp && <p className="text-red-500 text-sm">{errors.otp}</p>}
 
+            <div className="relative flex justify-end mt-4">
             <InputField
               label="Mật khẩu mới"
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
             />
+            
+             <button
+                      type="button"
+                      className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+             </button>
+            </div>
             {errors.newPassword && <p className="text-red-500 text-sm">{errors.newPassword}</p>}
-
+            <div className="relative flex justify-end mt-4">
             <InputField
               label="Xác nhận mật khẩu"
-              type="password"
+              type={showConfirmPassword ? "text" : "password"}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
             />
+            <button
+                      type="button"
+                      className="absolute top-12 right-3 text-gray-500 hover:text-gray-700"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+             </button>
+            </div>
+           
             {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
 
             <button

@@ -12,7 +12,7 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 import { IBook } from "@/types/book.interface";
 import RelatedBooks from "@/components/ui/RelatedBooks";
-
+import toast from "react-hot-toast";
 const BookDetail = () => {
   const router = useRouter();
   const { mutateAsync: postwishlist } = usePostWishlist();
@@ -20,7 +20,10 @@ const BookDetail = () => {
   const [book, setBook] = useState<IBook | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
-
+  const [hasShownError, setHasShownError] = useState(false);
+  useEffect(() => {
+    setHasShownError(false);
+  }, [isFavorite]);
   useEffect(() => {
     if (!slug) return;
 
@@ -74,41 +77,49 @@ const BookDetail = () => {
   const handleAddToWishlist = async () => {
     const userCookie = Cookies.get("user");
     if (!userCookie) {
-      alert("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
+      toast.error("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
       router.push("/login");
       return;
     }
-
+  
     const user = JSON.parse(userCookie);
-
+  
     if (!user.id || !book?._id) {
       alert("Không đủ thông tin người dùng hoặc sách.");
       return;
     }
-
+  
     if (isFavorite) {
-      alert("Sách đã trong danh sách yêu thích!");
+      if (!hasShownError) {
+        toast.error("Sách đã có trong danh sách yêu thích.");
+        setHasShownError(true); // Đánh dấu đã hiển thị thông báo lỗi
+        return;
+      }
       return;
     }
-
+  
     try {
       const response = await postwishlist({
         userId: user.id,
         bookId: book._id,
       });
-
+  
       if (response?.status === "Success") {
-        alert("Đã thêm vào danh sách yêu thích!");
-        setIsFavorite(true);
+        toast.success("Đã thêm vào danh sách yêu thích!");
+        setIsFavorite(true);  // Đánh dấu là yêu thích
+        setHasShownError(false);  // Reset trạng thái lỗi khi thêm thành công
         router.push("/wishlist");
       } else {
         alert("Thêm vào yêu thích thất bại.");
       }
     } catch (error) {
       console.error("Lỗi khi thêm yêu thích:", error);
-      alert("Có lỗi xảy ra.");
+      toast.error("Sách đã có trong danh sách yêu thích");
+      setHasShownError(true);  // Đánh dấu đã hiển thị thông báo lỗi
     }
   };
+  
+  
   const handlenavigatewishlish = () => {
     router.push("/wishlist"); 
   }
@@ -180,9 +191,10 @@ const BookDetail = () => {
             </button>
 
             <button
+              disabled={hasShownError}
               onClick={handleAddToWishlist}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg text-white transition ${
-                isFavorite
+                isFavorite || hasShownError
                   ? "bg-red-600 hover:bg-red-700"
                   : "bg-gray-500 hover:bg-gray-600"
               }`}
@@ -190,6 +202,7 @@ const BookDetail = () => {
               <FaHeart />
               {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
             </button>
+
 
             <button className="bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 flex items-center gap-2" onClick={handlenavigatewishlish}>
               <FaBookOpen /> Xem Danh Sách Yêu Thích

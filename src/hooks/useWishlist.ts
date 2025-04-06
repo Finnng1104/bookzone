@@ -28,9 +28,7 @@ const BASE_URL_DELETE_WISHLIST = process.env.NEXT_PUBLIC_DELETEWISHLIST;
         return response.data;
       },
     });
-  };
-
- 
+  }; 
 export const useDeleteWishlist = () => {
     return useMutation({
         mutationFn: async (id: string) => {
@@ -43,7 +41,6 @@ export const useDeleteWishlist = () => {
         },
     });
 }
-
 export const useGetWishlist = (userId: string) => {
     return useQuery({
       queryKey: ['wishlist', userId], 
