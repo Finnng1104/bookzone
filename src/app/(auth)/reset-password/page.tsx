@@ -66,9 +66,9 @@ const ResetPassword: React.FC = () => {
       onSuccess: (data) => {
         if (data.status) {
           setMessage(`✅ ${data.message || "Đổi mật khẩu thành công!"}`);
-          setTimeout(() => router.push("/login"), 2000); // Chuyển hướng sau 2 giây
+          setTimeout(() => router.push("/login"), 2000); 
         } else {
-          // Nếu status là false thì là lỗi, hiển thị thông báo lỗi
+        
           setMessage(`❌ ${data.message || "Có lỗi xảy ra!"}`);
         }
       },
