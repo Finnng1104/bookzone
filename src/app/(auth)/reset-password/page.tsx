@@ -49,9 +49,20 @@ const ResetPassword: React.FC = () => {
     } else if (formData.newPassword.length < 8) {
       formErrors.newPassword = "❌ Mật khẩu mới phải có ít nhất 8 ký tự.";
       isValid = false;
+    } else if (!/[A-Z]/.test(formData.newPassword)) {
+      formErrors.newPassword = "❌ Mật khẩu mới phải chứa ít nhất một chữ cái viết hoa.";
+      isValid = false;
+    } else if (!/[a-z]/.test(formData.newPassword)) {
+      formErrors.newPassword = "❌ Mật khẩu mới phải chứa ít nhất một chữ cái viết thường.";
+      isValid = false;
+    } else if (!/\d/.test(formData.newPassword)) {
+      formErrors.newPassword = "❌ Mật khẩu mới phải chứa ít nhất một số.";
+      isValid = false;
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.newPassword)) {
+      formErrors.newPassword = "❌ Mật khẩu mới phải chứa ít nhất một ký tự đặc biệt.";
+      isValid = false;
     }
 
-    // Kiểm tra mật khẩu xác nhận có khớp với mật khẩu mới không
     if (formData.newPassword !== formData.confirmPassword) {
       formErrors.confirmPassword = "❌ Mật khẩu không khớp.";
       isValid = false;
@@ -66,7 +77,7 @@ const ResetPassword: React.FC = () => {
     // log dữ liệu khi submit
     console.log("Submitted Data:", formData);
     if (!validateForm()) return;
-  
+    
     mutate({ otp: formData.otp, newPassword: formData.newPassword }, {
       onSuccess: (data) => {
         if (data.status) {
@@ -119,7 +130,7 @@ const ResetPassword: React.FC = () => {
               name="otp"
               value={formData.otp}
               onChange={handleChange}
-              required
+            
             />
             {errors.otp && <p className="text-red-500 text-sm">{errors.otp}</p>}
 
