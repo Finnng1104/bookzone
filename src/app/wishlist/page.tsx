@@ -6,14 +6,19 @@ import { useDeleteWishlist, useGetWishlist } from '@/hooks/useWishlist';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import axios from 'axios';
-import { useQueryClient } from '@tanstack/react-query'; // để invalidate cache sau khi xoá
+import { useQueryClient } from '@tanstack/react-query';
 
 axios.defaults.withCredentials = true;
 
 interface Book {
-  _id: string;
+  id: string;
   title: string;
   coverImage: string;
+}
+
+interface WishlistItem {
+  _id: string;
+  bookId: string;
 }
 
 const Wishlist = () => {
@@ -26,7 +31,7 @@ const Wishlist = () => {
   const handleRemove = (id: string) => {
     deleteMutation.mutate(id, {
       onSuccess: () => {
-        queryClient.invalidateQueries(['wishlists']);
+        queryClient.invalidateQueries({ queryKey: ['wishlists'] });
       },
       onError: (error) => {
         console.error('Lỗi khi xoá wishlist:', error);
@@ -38,11 +43,11 @@ const Wishlist = () => {
       if (data?.wishlists?.length) {
         try {
           const bookDetails = await Promise.all(
-            data.wishlists.map(async (item: any) => {
+            data.wishlists.map(async (item: WishlistItem) => { 
               const res = await axios.get(`${process.env.NEXT_PUBLIC_BOOK_DETAIL}/${item.bookId}`);
               const book = res.data.data;
               return {
-                _id: item._id,
+                id: item._id,
                 title: book.title,
                 coverImage: book.coverImage || "/images/default.jpg",
               };
@@ -66,14 +71,12 @@ const Wishlist = () => {
       <Sidebar />
       <div className="w-full md:w-3/4">
         <h2 className="text-2xl font-bold mb-4">Danh sách sách yêu thích</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {books.map((book) => (
             <BookCard
-              key={book._id}
+              key={book.id}
               book={book}
-              onRemove={() => {
-                handleRemove(book._id)
-              }}
+              onRemove={() => handleRemove(book.id)}
             />
           ))}
         </div>

@@ -53,7 +53,9 @@ const BookDetail = () => {
     }
   };
 
-  // 👉 Loading
+  // const toggleFavorite = () => {
+  //   setIsFavorite(!isFavorite);
+  // };
 
   if (loading) {
     return (

@@ -56,11 +56,7 @@ const RelatedBooks: React.FC<RelatedBooksProps> = ({ category }) => {
             image={book.coverImage || "/default-book.jpg"}
             title={book.title}
             slug={book.slug}
-            category={
-              Array.isArray(book.category)
-                ? book.category.join(", ")
-                : "Chưa phân loại"
-            }
+            category={book.category}
             highlight={book.rating >= 4}
             favorites={book.favorites}
             views={book.views}

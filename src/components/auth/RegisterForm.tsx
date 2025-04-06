@@ -9,10 +9,9 @@ import Cookies from "js-cookie";
 import { useRegister, handleGoogleLogin } from "@/hooks/useAuth";
 import { AxiosError } from "axios";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
+import type { CredentialResponse } from "@react-oauth/google";
+import toast from "react-hot-toast";
 
-interface CredentialResponse {
-  credential: string | undefined;
-}
 
 const RegisterForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,57 +23,69 @@ const RegisterForm: React.FC = () => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [successMessage, setSuccessMessage] = useState<string>("");
   const router = useRouter();
   const { mutateAsync: registerUser, isPending } = useRegister();
 
-  // Hàm validate form
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.fullname.trim())
+  
+    if (!formData.fullname.trim()) {
       newErrors.fullname = "Họ và tên không được để trống.";
-    if (!formData.email.trim()) newErrors.email = "Email không được để trống.";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
+    }
+  
+    if (!formData.email.trim()) {
+      newErrors.email = "Email không được để trống.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email không hợp lệ.";
-    if (!formData.password)
+    }
+  
+    if (!formData.password) {
       newErrors.password = "Mật khẩu không được để trống.";
-    else if (formData.password.length < 8)
-      newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự.";
-    if (formData.confirmPassword !== formData.password)
+    } else {
+      if (formData.password.length < 8) {
+        newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự.";
+      } else if (!/[A-Z]/.test(formData.password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái viết hoa.";
+      } else if (!/[a-z]/.test(formData.password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một chữ cái viết thường.";
+      } else if (!/\d/.test(formData.password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một số.";
+      } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+        newErrors.password = "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+      }
+    }
+  
+    if (formData.confirmPassword !== formData.password) {
       newErrors.confirmPassword = "Mật khẩu xác nhận không khớp.";
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Xử lý đăng ký
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
-
+  
     try {
       const response = await registerUser(formData);
-      if (response.message) {
-        setErrors((prev) => ({ ...prev, general: response.message }));
-        setSuccessMessage(""); // Reset success message
-      } else {
-        // Reset errors và hiển thị thông báo thành công
-        setErrors({});
-        setSuccessMessage("Đăng ký thành công!");
 
-        // Đợi 2 giây trước khi chuyển hướng đến trang login
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-      }
+if (response?.user) {
+  setErrors({});
+  toast.success("Đăng ký thành công!");
+  setTimeout(() => {
+    router.push("/login");
+  }, 2000);
+} else {
+  setErrors((prev) => ({ ...prev, general: response.message || "Có lỗi xảy ra." }));
+}
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response && error.response.data) {
           const serverError = error.response.data;
-
-          // Nếu có lỗi từ server
+  
           if (serverError.errors) {
             setErrors((prev) => ({ ...prev, ...serverError.errors }));
-            setSuccessMessage("");
           } else {
             setErrors((prev) => ({
               ...prev,
@@ -93,7 +104,6 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  // Xử lý đăng nhập bằng Google
   const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
     try {
       const { credential } = response;
@@ -112,50 +122,60 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <AuthForm title="Đăng Ký" onSubmit={handleSubmit}>
-      <div className="w-full bg-white shadow-xl rounded-2xl px-6 py-8">
-        <InputField
-          label="Họ và tên"
-          type="text"
-          name="fullname"
-          value={formData.fullname}
-          onChange={(e) =>
-            setFormData({ ...formData, fullname: e.target.value })
-          }
-        />
-        {errors.fullname && (
-          <p className="text-red-500 text-sm">{errors.fullname}</p>
-        )}
+    <>
+  <AuthForm title="Đăng Ký" onSubmit={handleSubmit}>
+    <div className="w-full bg-white shadow-xl rounded-2xl px-4 sm:px-6 py-6 sm:py-8">
+      <InputField
+        label="Họ và tên"
+        type="text"
+        name="fullname"
+        value={formData.fullname}
+        onChange={(e) =>
+          setFormData({ ...formData, fullname: e.target.value })
+        }
+      />
+      {errors.fullname && (
+        <p className="text-red-500 text-sm mt-1">{errors.fullname}</p>
+      )}
+
+      <div className="mt-4">
         <InputField
           label="Email"
           type="text"
           name="email"
           value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, email: e.target.value })
+          }
         />
-        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
-        <div className="relative flex justify-end">
-          <InputField
-            label="Mật khẩu"
-            type={showPassword ? "text" : "password"}
-            name="password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password}</p>
-          )}
-          <button
-            type="button"
-            className="absolute top-12 right-2 text-gray-500 hover:text-gray-700"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
-          </button>
-        </div>
-        <div className="relative flex justify-end">
+        {errors.email && (
+          <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+        )}
+      </div>
+
+      <div className="relative mt-4">
+        <InputField
+          label="Mật khẩu"
+          type={showPassword ? "text" : "password"}
+          name="password"
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+        />
+        <button
+          type="button"
+          className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
+        </button>
+        {errors.password && (
+          <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+        )}
+      </div>
+
+      <div className="relative mt-4">
         <InputField
           label="Xác nhận mật khẩu"
           type={showconfirmpassword ? "text" : "password"}
@@ -165,48 +185,61 @@ const RegisterForm: React.FC = () => {
             setFormData({ ...formData, confirmPassword: e.target.value })
           }
         />
-        {errors.confirmPassword && (
-          <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
-        )}
-          <button
-            type="button"
-            className="absolute top-12 right-2 text-gray-500 hover:text-gray-700"
-            onClick={() => setShowConfirmPassword(!showconfirmpassword)}
-          >
-            { showconfirmpassword? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
-          </button>
-        </div>
-       
         <button
-          type="submit"
-          className="w-full bg-blue-500 text-white py-3 rounded-xl mt-4"
-          disabled={isPending}
+          type="button"
+          className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+          onClick={() => setShowConfirmPassword(!showconfirmpassword)}
         >
-          {isPending ? "Đang đăng ký..." : "Đăng Ký"}
+          {showconfirmpassword ? (
+            <IoIosEyeOff size={20} />
+          ) : (
+            <IoIosEye size={20} />
+          )}
         </button>
-        {errors.general && (
-          <p className="text-red-500 text-center mt-4">{errors.general}</p>
+        {errors.confirmPassword && (
+          <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
         )}
-        {successMessage && (
-          <p className="text-green-500 text-center mt-4">{successMessage}</p>
-        )}{" "}
-        {/* Show success message */}
-        <div className="mt-6 text-center">Hoặc</div>
-        <div className="flex justify-center mt-4">
-          <GoogleOAuthProvider
-            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
-          >
-            <GoogleLogin onSuccess={handleGoogleLoginSuccess} useOneTap />
-          </GoogleOAuthProvider>
-        </div>
-        <p className="text-center text-gray-700 mt-6">
-          Đã có tài khoản?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Đăng nhập ngay
-          </a>
-        </p>
       </div>
-    </AuthForm>
+
+      <button
+        type="submit"
+        className="w-full bg-blue-500 text-white py-3 rounded-xl mt-6 hover:bg-blue-600 transition-all duration-300 shadow-lg text-lg font-semibold"
+        disabled={isPending}
+      >
+        {isPending ? "Đang đăng ký..." : "Đăng Ký"}
+      </button>
+
+      {errors.general && (
+        <p className="text-red-500 text-center mt-4">{errors.general}</p>
+      )}
+
+      <div className="mt-6 text-center text-gray-600 font-medium">Hoặc</div>
+
+      <div className="flex justify-center mt-4">
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}
+        >
+          <GoogleLogin
+            onSuccess={handleGoogleLoginSuccess}
+            useOneTap
+            shape="pill"
+            width="100%"
+          />
+        </GoogleOAuthProvider>
+      </div>
+
+      <p className="text-center text-gray-700 mt-6 text-sm sm:text-base">
+        Đã có tài khoản?{" "}
+        <a
+          href="/login"
+          className="text-blue-600 hover:underline font-semibold"
+        >
+          Đăng nhập ngay
+        </a>
+      </p>
+    </div>
+  </AuthForm>
+</>
   );
 };
 

@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Toast animation đẹp */
+.toaster-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  .toaster-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  .toaster-exit {
+    opacity: 1;
+  }
+  .toaster-exit-active {
+    opacity: 0;
+    transition: opacity 300ms;
+  }

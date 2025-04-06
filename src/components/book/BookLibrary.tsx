@@ -6,6 +6,7 @@ import IBook from "@/types/book.interface";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import FilterBar from "../ui/Filter";
+import { useRouter, usePathname } from "next/navigation";
 
 const BookLibrary = () => {
   const [books, setBooks] = useState<IBook[]>([]);
@@ -17,31 +18,38 @@ const BookLibrary = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    const query = searchParams.get("q");
+    const type = searchParams.get("type");
+  
+    // Đồng bộ filter khi có query param
+    if (type === "category" && query) {
+      setFilter(query);
+    }
+  
     const fetchBooks = async () => {
       setLoading(true);
-
+  
       try {
-        const searchType = searchParams.get("type");
-        const searchQuery = searchParams.get("q");
-
         let url = `http://localhost:8080/api/books?page=${currentPage}`;
-
-        if (searchQuery?.trim()) {
-          const query = encodeURIComponent(searchQuery.trim());
-
-          if (searchType === "title") {
-            url = `http://localhost:8080/api/books/search/title/${query}?page=${currentPage}`;
-          } else if (searchType === "author") {
-            url = `http://localhost:8080/api/books/search/author/${query}?page=${currentPage}`;
+  
+        if (query?.trim()) {
+          const encodedQuery = encodeURIComponent(query.trim());
+  
+          if (type === "title") {
+            url = `http://localhost:8080/api/books/search/title/${encodedQuery}?page=${currentPage}`;
+          } else if (type === "author") {
+            url = `http://localhost:8080/api/books/search/author/${encodedQuery}?page=${currentPage}`;
+          } else if (type === "category") {
+            url = `http://localhost:8080/api/books/category/${encodedQuery}?page=${currentPage}`;
           }
         } else if (filter !== "all") {
           const category = encodeURIComponent(filter);
           url = `http://localhost:8080/api/books/category/${category}?page=${currentPage}`;
         }
-
+  
         const res = await fetch(url);
         const data = await res.json();
-
+  
         if (res.ok && data.success && Array.isArray(data.data)) {
           setBooks(data.data);
           setTotalPages(data.pagination?.totalPages || 1);
@@ -57,13 +65,20 @@ const BookLibrary = () => {
         setLoading(false);
       }
     };
-
+  
     fetchBooks();
   }, [searchParams, filter, currentPage]);
 
+  const router = useRouter();
+  const pathname = usePathname();
+  
   const handleFilterChange = (value: string) => {
     setFilter(value);
     setCurrentPage(1);
+  
+    // Cập nhật URL khi filter thay đổi
+    const query = value !== "all" ? `?type=category&q=${encodeURIComponent(value)}` : "";
+    router.push(`${pathname}${query}`);
   };
 
   return (
@@ -122,7 +137,6 @@ const BookLibrary = () => {
                 title={book.title}
                 slug={book.slug}
                 category={book.category} 
-                highlight={book.rating >= 4}
                 favorites={book.favorites}
                 views={book.views}
                 rating={book.rating}

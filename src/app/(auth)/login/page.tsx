@@ -1,15 +1,17 @@
 import LoginForm from "@/components/auth/LoginForm";
 
-export default function LoginPage() {
+const LoginPage = () => {
   return (
     <div className="h-screen w-full flex items-center justify-center bg-cover bg-center relative px-4" 
       style={{ backgroundImage: "url('/images/bookbg.jpg')" }}
     >
       <div className="absolute inset-0 bg-black bg-opacity-40"></div>
 
-      <div className="relative z-10 w-full sm:w-96 md:w-4/12">
+      <div className="relative z-10 w-full sm:w-96 md:w-4/5 lg:w-3/5 xl:w-1/2 2xl:w-1/3">
         <LoginForm />
       </div>
     </div>
   );
 }
+
+export default LoginPage;
