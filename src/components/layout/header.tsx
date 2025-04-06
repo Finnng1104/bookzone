@@ -152,7 +152,7 @@ const Header = () => {
             <FaSearch size={20} />
           </button>
           <Link
-            href="/favorites"
+            href="/wishlist"
             className="text-primary hover:text-opacity-80 hidden sm:block"
           >
             <FaHeart size={20} />
