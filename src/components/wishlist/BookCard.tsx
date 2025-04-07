@@ -1,12 +1,14 @@
 import Image from 'next/image';
 import { FaTrash } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 interface BookCardProps {
   book: {
     id: string;
     title: string;
     coverImage: string;
+    slug: string;
   };
   onRemove: (id: string) => void;
 }
@@ -50,15 +52,17 @@ const BookCard = ({ book, onRemove }: BookCardProps) => {
           {book.title}
         </h3>
       </div>
-
-      {/* Nút xem chi tiết */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent
+    <Link href={`/ebook/${book.slug}`}>
+    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent
                     opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
         <button className="w-full bg-white text-gray-900 py-2 rounded-lg font-medium
                          hover:bg-teal-50 transition-colors duration-300">
           Xem chi tiết
         </button>
       </div>
+    </Link>
+      {/* Nút xem chi tiết */}
+     
     </motion.div>
   );
 };
