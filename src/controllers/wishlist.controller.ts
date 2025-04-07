@@ -29,7 +29,6 @@ export default class WishlistController {
       if (!bookId || !userId) {
         res.status(400).json({ error: "Missing required fields" });
       }
-
       const newWishlist = await WishlistService.createWishlist(req.body);
        res.status(201).json({ newWishlist, status: "Success" });
     } catch (error) {
