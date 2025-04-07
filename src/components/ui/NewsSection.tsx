@@ -3,25 +3,25 @@ import NewsCard from "./NewsCard";
 
 const newsArticles = [
   {
-    image: "/news/article1.jpg",
+    image: "/images/post1.jpg",
     title: "Review Học Cách Học của Barbara Oakley",
     description: "Học Cách Học là một cuốn sách rất giá trị và đáng đọc của Barbara...",
   },
   {
-    image: "/news/article2.jpg",
+    image: "/images/post2.png",
     title: "Review Phương Pháp Học Tập Feynman của Âm Hồng Tín & Lý Vĩ",
     description: "Phương Pháp Học Tập Feynman là một cuốn sách khá thú vị...",
   },
   {
-    image: "/news/article3.jpg",
+    image: "/images/post3.jpg",
     title: "Hàn Lập đại chiến Ông Thiên Nhân, bối cảnh, tu vi, kết quả",
     description: "HÀN LẬP VS ÔN THIÊN NHÂN LIỆU ĐÂY CÓ PHẢI LÀ CUỘC ĐỐI ĐẦU ĐỈNH...",
   },
   {
-    image: "/news/article4.jpg",
-    title: "Chân linh Du Thiên Côn Bằng là gì? Nguồn gốc và công dụng?",
-    description: "CHÂN LINH DU THIÊN CÔN BẰNG trong thế giới Phàm Nhân Tu Tiên...",
-  },
+    image: "/images/post4.jpg",
+    title: "30 Tuổi – Mọi Thứ Chỉ Mới Bắt Đầu",
+    description: "Một cuốn sách truyền cảm hứng mạnh mẽ dành cho những ai đang cảm thấy chênh vênh ở ngưỡng tuổi 30. Tác giả Lý Thượng Long mang đến góc nhìn mới mẻ về hành trình trưởng thành, giúp bạn nhận ra rằng: tuổi 30 không phải là dấu chấm hết, mà là sự khởi đầu cho những cơ hội và thay đổi lớn lao.",
+  }  
 ];
 
 const smallNews = [
