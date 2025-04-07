@@ -20,12 +20,10 @@ export default class WishlistController {
     }
   }
 
-  // Tạo wishlist mới
   static async postWishlist(req: Request, res: Response): Promise<void> {
     try {
       const { bookId, userId }: IWishlist = req.body;
 
-      // Kiểm tra dữ liệu đầu vào
       if (!bookId || !userId) {
         res.status(400).json({ error: "Missing required fields" });
       }
@@ -39,12 +37,10 @@ export default class WishlistController {
     }
   }
 
-  // Xóa wishlist
   static async deleteWishlist(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
 
-      // Kiểm tra xem wishlist có tồn tại không
       const deletedWishlist = await WishlistService.deleteWishlist(id);
 
       if (!deletedWishlist) {
