@@ -27,7 +27,7 @@ export class WishlistService {
       
       return newWishlist;
     } catch (error) {
-      throw new Error("Error creating wishlist: " + (error as Error).message);
+      throw new Error((error as Error).message);
     }
   }
   
