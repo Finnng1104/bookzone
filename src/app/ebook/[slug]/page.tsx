@@ -105,9 +105,6 @@ const BookDetail = () => {
     }
   };
 
-  const handlenavigatewishlish = () => {
-    router.push("/wishlist");
-  };
 
   if (loading) {
     return (

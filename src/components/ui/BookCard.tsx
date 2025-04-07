@@ -82,10 +82,8 @@ const BookCard: React.FC<BookCardProps> = ({
         }
       }
     } catch (error: any) {
-      console.error("Lỗi khi xử lý yêu thích:", error);
-    
+  
       if (error?.response?.data?.message) {
-        console.log("error", error);
         toast.error(error.response.data.message);
       } else {
         toast.error("Có lỗi xảy ra khi xử lý yêu thích.");

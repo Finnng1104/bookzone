@@ -16,6 +16,7 @@ interface Book {
   id: string;
   title: string;
   coverImage: string;
+  slug?: string;
 }
 
 interface WishlistItem {
@@ -38,10 +39,13 @@ const Wishlist = () => {
             data.wishlists.map(async (item: WishlistItem) => { 
               const res = await axios.get(`${process.env.NEXT_PUBLIC_BOOK_DETAIL}/${item.bookId}`);
               const book = res.data.data;
+              console.log("Chi tiết sách:", book);
+              
               return {
                 id: item._id,
                 title: book.title,
                 coverImage: book.coverImage || "/images/default.jpg",
+                slug: book.slug || "",
               };
             })
           );
@@ -159,7 +163,12 @@ const Wishlist = () => {
                   {books.map((book) => (
                     <div key={book.id} className="h-full">
                       <BookCard
-                        book={book}
+                       book={{
+                        id: book.id,
+                        title: book.title,
+                        coverImage: book.coverImage,
+                        slug: book.slug || "",
+                      }}
                         onRemove={() => handleRemove(book.id)}
                       />
                     </div>
