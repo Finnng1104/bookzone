@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Toast animation đẹp */
+
 .toaster-enter {
     opacity: 0;
     transform: translateY(-10px);
