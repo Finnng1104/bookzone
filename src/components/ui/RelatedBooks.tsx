@@ -57,8 +57,7 @@ const RelatedBooks: React.FC<RelatedBooksProps> = ({ category }) => {
             title={book.title}
             slug={book.slug}
             category={book.category}
-            highlight={book.rating >= 4}
-            favorites={book.favorites}
+
             views={book.views}
             rating={book.rating}
           />
