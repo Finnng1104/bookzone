@@ -11,6 +11,7 @@ import { IBlog } from "@/types/blog.interface";
 
 // Ép dynamic rendering để tránh pre-render lỗi
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
