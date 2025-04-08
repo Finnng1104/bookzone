@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 // import CategoryFilter from "@/components/blog/CategoryFilter";
 import BlogCard from "@/components/blog/BlogCard";
@@ -57,27 +57,30 @@ export default function BlogPage() {
 
   return (
     <>
-      <Breadcrumb />
-      <div className="container mx-auto px-4 py-8">
-        {/* <CategoryFilter /> */}
+      <Suspense fallback={<div>Đang tải trang...</div>}>
+        <Breadcrumb />
+        <div className="container mx-auto px-4 py-8">
+            {/* <CategoryFilter /> */}
 
-        {loading ? (
-          <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
-            <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
-            <p className="text-lg">Đang tải danh sách bài viết...</p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-4 mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
-              {displayedBlogs.map((blog) => (
-                <BlogCard key={blog.id} blog={blog} />
-              ))}
+            {loading ? (
+            <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
+                <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+                <p className="text-lg">Đang tải danh sách bài viết...</p>
             </div>
+            ) : (
+            <>
+                <div className="space-y-4 mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
+                {displayedBlogs.map((blog) => (
+                    <BlogCard key={blog.id} blog={blog} />
+                ))}
+                </div>
 
-            <Pagination totalPages={totalPages} />
-          </>
-        )}
-      </div>
+                <Pagination totalPages={totalPages} />
+            </>
+            )}
+        </div>
+    </Suspense>
+     
     </>
   );
 }
