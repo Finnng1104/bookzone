@@ -16,7 +16,6 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [scale, setScale] = useState<number>(1);
-  const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [dualPage, setDualPage] = useState<boolean>(true);
@@ -54,7 +53,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
 
     const fetchBook = async () => {
       try {
-        const res = await fetch(`http://localhost:8080/api/books/slug/${slug}`);
+        const res = await fetch(`https://bookzone-server.onrender.com/api/books/slug/${slug}`);
         const response = await res.json();
         const data = response.data;
 
@@ -82,7 +81,6 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
         const loadingTask = getDocument(fileUrl);
         const pdf = await loadingTask.promise;
 
-        setPdfDoc(pdf);
         setTotalPages(pdf.numPages);
 
         renderPage(pdf, currentPage);

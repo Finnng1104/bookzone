@@ -4,9 +4,13 @@ import FeatureList from "@/components/ui/FeatureList";
 import HeroBanner from "@/components/banner/HeroBanner";
 import NewsSection from "@/components/ui/NewsSection";
 
+
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const getBooks = async () => {
   const category = encodeURIComponent("Quản Trị");
-  const res = await fetch(`http://localhost:8080/api/books/category/${category}?limit=12`, {
+  const res = await fetch(`${API_URL}/api/books/category/${category}?limit=12`, {
     cache: "no-store",
   });
   const json = await res.json();
@@ -14,7 +18,7 @@ const getBooks = async () => {
 };
 
 const getHotBooks = async () => {
-  const res = await fetch("http://localhost:8080/api/books/category/Hot?limit=12", {
+  const res = await fetch(`${API_URL}/api/books/category/Hot?limit=12`, {
     cache: "no-store",
   });
   const json = await res.json();

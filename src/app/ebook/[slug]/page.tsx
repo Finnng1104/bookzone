@@ -34,7 +34,7 @@ const BookDetail = () => {
     const fetchBook = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/books/slug/${slug}`);
+        const res = await fetch(`https://bookzone-server.onrender.com/api/books/slug/${slug}`);
         const data = await res.json();
 
         if (res.ok && data.success && data.data) {
