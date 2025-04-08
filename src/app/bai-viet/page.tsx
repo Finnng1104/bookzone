@@ -1,13 +1,16 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 // import CategoryFilter from "@/components/blog/CategoryFilter";
 import BlogCard from "@/components/blog/BlogCard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import Pagination from "@/components/blog/Pagination"; 
+import Pagination from "@/components/blog/Pagination";
 import { FaSpinner } from "react-icons/fa";
 import { IBlog } from "@/types/blog.interface";
+
+// Ép dynamic rendering để tránh pre-render lỗi
+export const dynamic = "force-dynamic";
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
@@ -26,7 +29,6 @@ export default function BlogPage() {
 
       try {
         const categoryParam = searchParams.get("category") || "";
-
         const response = await fetch("/data/blogs.json");
         const data: IBlog[] = await response.json();
 
@@ -35,16 +37,16 @@ export default function BlogPage() {
           filteredBlogs = data.filter((blog: IBlog) => blog.category === categoryParam);
         }
 
-        setTotalPages(Math.ceil(filteredBlogs.length / perPage));
+        const totalFilteredPages = Math.ceil(filteredBlogs.length / perPage);
+        setTotalPages(totalFilteredPages);
 
         const start = (currentPage - 1) * perPage;
         const end = start + perPage;
         setDisplayedBlogs(filteredBlogs.slice(start, end));
 
-        if (currentPage > Math.ceil(filteredBlogs.length / perPage)) {
+        if (currentPage > totalFilteredPages && totalFilteredPages > 0) {
           router.push("/bai-viet?page=1");
         }
-
       } catch (error) {
         console.error("Lỗi khi load blogs:", error);
       } finally {
@@ -57,30 +59,28 @@ export default function BlogPage() {
 
   return (
     <>
-      <Suspense fallback={<div>Đang tải trang...</div>}>
-        <Breadcrumb />
-        <div className="container mx-auto px-4 py-8">
-            {/* <CategoryFilter /> */}
+      <Breadcrumb />
 
-            {loading ? (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
-                <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
-                <p className="text-lg">Đang tải danh sách bài viết...</p>
+      <div className="container mx-auto px-4 py-8">
+        {/* <CategoryFilter /> */}
+
+        {loading ? (
+          <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
+            <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+            <p className="text-lg">Đang tải danh sách bài viết...</p>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-4 mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
+              {displayedBlogs.map((blog) => (
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
             </div>
-            ) : (
-            <>
-                <div className="space-y-4 mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
-                {displayedBlogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} />
-                ))}
-                </div>
 
-                <Pagination totalPages={totalPages} />
-            </>
-            )}
-        </div>
-    </Suspense>
-     
+            <Pagination totalPages={totalPages} />
+          </>
+        )}
+      </div>
     </>
   );
 }
