@@ -1,63 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import CategoryFilter from "@/components/blog/CategoryFilter";
+import { useSearchParams, useRouter } from "next/navigation";
+// import CategoryFilter from "@/components/blog/CategoryFilter";
 import BlogCard from "@/components/blog/BlogCard";
-import Pagination from "@/components/blog/Pagination";
-
-// Mock data hiển thị ban đầu
-const mockBlogs = [
-  {
-    id: 1,
-    title: "Khám phá sách Marketing 2025",
-    slug: "marketing-2025",
-    excerpt: "Giới thiệu cuốn sách marketing mới nhất giúp bạn làm chủ thị trường.",
-    image: "/images/blog1.jpg",
-    category: "Marketing",
-  },
-  {
-    id: 2,
-    title: "Sách kỹ năng sống đỉnh cao",
-    slug: "ky-nang-song",
-    excerpt: "Học cách quản lý thời gian và tăng năng suất mỗi ngày.",
-    image: "/images/blog2.jpg",
-    category: "Kỹ năng sống",
-  },
-  {
-    id: 3,
-    title: "Bí quyết tài chính cá nhân",
-    slug: "tai-chinh-ca-nhan",
-    excerpt: "Cẩm nang quản lý tài chính cho người mới bắt đầu.",
-    image: "/images/blog3.jpg",
-    category: "Tài chính",
-  },
-  {
-    id: 4,
-    title: "Review sách Khởi nghiệp",
-    slug: "review-khoi-nghiep",
-    excerpt: "Hành trình từ ý tưởng đến startup thành công.",
-    image: "/images/blog4.jpg",
-    category: "Khởi nghiệp",
-  },
-];
+import Breadcrumb from "@/components/ui/Breadcrumb";
+import Pagination from "@/components/blog/Pagination"; 
+import { FaSpinner } from "react-icons/fa";
+import { IBlog } from "@/types/blog.interface";
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
-  const page = Number(searchParams.get("page") || 1);
-  const category = searchParams.get("category") || "";
+  const router = useRouter();
 
-  const [blogs, setBlogs] = useState(mockBlogs); // Dùng mock data ban đầu
+  const [displayedBlogs, setDisplayedBlogs] = useState<IBlog[]>([]);
+  const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false); // Không loading vì có data mock
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const perPage = 10;
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
+
       try {
-        const { data, totalPages } = await getBlogs({ page, category });
-        setBlogs(data);
-        setTotalPages(totalPages);
+        const categoryParam = searchParams.get("category") || "";
+
+        const response = await fetch("/data/blogs.json");
+        const data: IBlog[] = await response.json();
+
+        let filteredBlogs = data;
+        if (categoryParam) {
+          filteredBlogs = data.filter((blog: IBlog) => blog.category === categoryParam);
+        }
+
+        setTotalPages(Math.ceil(filteredBlogs.length / perPage));
+
+        const start = (currentPage - 1) * perPage;
+        const end = start + perPage;
+        setDisplayedBlogs(filteredBlogs.slice(start, end));
+
+        if (currentPage > Math.ceil(filteredBlogs.length / perPage)) {
+          router.push("/bai-viet?page=1");
+        }
+
       } catch (error) {
         console.error("Lỗi khi load blogs:", error);
       } finally {
@@ -66,21 +53,31 @@ export default function BlogPage() {
     };
 
     fetchBlogs();
-  }, [page, category]);
+  }, [searchParams, currentPage, router]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">📚 Blog mới nhất</h1>
+    <>
+      <Breadcrumb />
+      <div className="container mx-auto px-4 py-8">
+        {/* <CategoryFilter /> */}
 
-      <CategoryFilter />
+        {loading ? (
+          <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
+            <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+            <p className="text-lg">Đang tải danh sách bài viết...</p>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-4 mt-6 grid gap-4 grid-cols-1 md:grid-cols-2">
+              {displayedBlogs.map((blog) => (
+                <BlogCard key={blog.id} blog={blog} />
+              ))}
+            </div>
 
-      <div className="grid md:grid-cols-2 gap-6 mt-6">
-        {blogs.map((blog: any) => (
-          <BlogCard key={blog.id} blog={blog} />
-        ))}
+            <Pagination totalPages={totalPages} />
+          </>
+        )}
       </div>
-
-      <Pagination totalPages={totalPages} />
-    </div>
+    </>
   );
 }

@@ -163,7 +163,7 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
   };
 
   return (
-    <div className="mt-12 bg-white rounded-lg p-6 shadow-md">
+    <div className=" bg-white rounded-lg p-6 shadow-md">
       <h3 className="font-semibold text-lg mb-4">Đánh giá sách 📖</h3>
 
       {/* Form */}

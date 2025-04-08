@@ -1,0 +1,134 @@
+[
+    {
+      "id": 1,
+      "title": "Review Học Cách Học của Barbara Oakley",
+      "slug": "review-hoc-cach-hoc-barbara-oakley",
+      "excerpt": "Học Cách Học là một cuốn sách rất giá trị và đáng đọc của Barbara...",
+      "image": "/images/post1.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Học Cách Học của Barbara Oakley...",
+      "recommend": true
+    },
+    {
+      "id": 2,
+      "title": "Review Phương Pháp Học Tập Feynman của Âm Hồng Tín & Lý Vĩ",
+      "slug": "review-phuong-phap-hoc-tap-feynman",
+      "excerpt": "Phương Pháp Học Tập Feynman là một cuốn sách khá thú vị...",
+      "image": "/images/post2.png",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Phương Pháp Học Tập Feynman...",
+      "recommend": false
+    },
+    {
+      "id": 3,
+      "title": "Hàn Lập đại chiến Ông Thiên Nhân, bối cảnh, tu vi, kết quả",
+      "slug": "han-lap-dai-chien-ong-thien-nhan",
+      "excerpt": "HÀN LẬP VS ÔN THIÊN NHÂN LIỆU ĐÂY CÓ PHẢI LÀ CUỘC ĐỐI ĐẦU ĐỈNH...",
+      "image": "/images/post3.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về trận chiến giữa Hàn Lập và Ông Thiên Nhân...",
+      "recommend": false
+    },
+    {
+      "id": 4,
+      "title": "30 Tuổi – Mọi Thứ Chỉ Mới Bắt Đầu",
+      "slug": "30-tuoi-moi-thu-chi-moi-bat-dau",
+      "excerpt": "Một cuốn sách truyền cảm hứng mạnh mẽ dành cho những ai đang cảm thấy chênh vênh ở ngưỡng tuổi 30...",
+      "image": "/images/post4.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về cuốn sách 30 Tuổi Mọi Thứ Chỉ Mới Bắt Đầu...",
+      "recommend": true
+    },
+    {
+      "id": 5,
+      "title": "Review Học Cách Học của Barbara Oakley",
+      "slug": "review-hoc-cach-hoc-barbara-oakley",
+      "excerpt": "Học Cách Học là một cuốn sách rất giá trị và đáng đọc của Barbara...",
+      "image": "/images/post1.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Học Cách Học của Barbara Oakley...",
+      "recommend": true
+    },
+    {
+      "id": 6,
+      "title": "Review Phương Pháp Học Tập Feynman của Âm Hồng Tín & Lý Vĩ",
+      "slug": "review-phuong-phap-hoc-tap-feynman",
+      "excerpt": "Phương Pháp Học Tập Feynman là một cuốn sách khá thú vị...",
+      "image": "/images/post2.png",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Phương Pháp Học Tập Feynman...",
+      "recommend": true
+    },
+    {
+      "id": 7,
+      "title": "Hàn Lập đại chiến Ông Thiên Nhân, bối cảnh, tu vi, kết quả",
+      "slug": "han-lap-dai-chien-ong-thien-nhan",
+      "excerpt": "HÀN LẬP VS ÔN THIÊN NHÂN LIỆU ĐÂY CÓ PHẢI LÀ CUỘC ĐỐI ĐẦU ĐỈNH...",
+      "image": "/images/post3.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về trận chiến giữa Hàn Lập và Ông Thiên Nhân...",
+      "recommend": true
+    },
+    {
+      "id": 8,
+      "title": "30 Tuổi – Mọi Thứ Chỉ Mới Bắt Đầu",
+      "slug": "30-tuoi-moi-thu-chi-moi-bat-dau",
+      "excerpt": "Một cuốn sách truyền cảm hứng mạnh mẽ dành cho những ai đang cảm thấy chênh vênh ở ngưỡng tuổi 30...",
+      "image": "/images/post4.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về cuốn sách 30 Tuổi Mọi Thứ Chỉ Mới Bắt Đầu...",
+      "recommend": true
+    },
+    {
+      "id": 9,
+      "title": "Review Học Cách Học của Barbara Oakley",
+      "slug": "review-hoc-cach-hoc-barbara-oakley",
+      "excerpt": "Học Cách Học là một cuốn sách rất giá trị và đáng đọc của Barbara...",
+      "image": "/images/post1.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Học Cách Học của Barbara Oakley...",
+      "recommend": false
+    },
+    {
+      "id": 10,
+      "title": "Review Phương Pháp Học Tập Feynman của Âm Hồng Tín & Lý Vĩ",
+      "slug": "review-phuong-phap-hoc-tap-feynman",
+      "excerpt": "Phương Pháp Học Tập Feynman là một cuốn sách khá thú vị...",
+      "image": "/images/post2.png",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về Phương Pháp Học Tập Feynman...",
+      "recommend": false
+    },
+    {
+      "id": 11,
+      "title": "Hàn Lập đại chiến Ông Thiên Nhân, bối cảnh, tu vi, kết quả",
+      "slug": "han-lap-dai-chien-ong-thien-nhan",
+      "excerpt": "HÀN LẬP VS ÔN THIÊN NHÂN LIỆU ĐÂY CÓ PHẢI LÀ CUỘC ĐỐI ĐẦU ĐỈNH...",
+      "image": "/images/post3.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về trận chiến giữa Hàn Lập và Ông Thiên Nhân...",
+      "recommend": false
+    },
+    {
+      "id": 12,
+      "title": "30 Tuổi – Mọi Thứ Chỉ Mới Bắt Đầu",
+      "slug": "30-tuoi-moi-thu-chi-moi-bat-dau",
+      "excerpt": "Một cuốn sách truyền cảm hứng mạnh mẽ dành cho những ai đang cảm thấy chênh vênh ở ngưỡng tuổi 30...",
+      "image": "/images/post4.jpg",
+      "author": "Admin",
+      "date": "2025-04-08",
+      "content": "Toàn bộ nội dung bài viết về cuốn sách 30 Tuổi Mọi Thứ Chỉ Mới Bắt Đầu...",
+      "recommend": false
+    }
+  ]

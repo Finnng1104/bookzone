@@ -1,26 +1,40 @@
 import Link from "next/link";
 import Image from "next/image";
+import { IBlog } from "@/types/blog.interface"; 
 
-export default function BlogCard({ blog }: { blog: any }) {
+interface BlogCardProps {
+  blog: IBlog;
+}
+
+export default function BlogCard({ blog }: BlogCardProps) {
+  const date = new Date(blog.date);
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = date.toLocaleString("vi-VN", { month: "short" }).toUpperCase();
+
   return (
     <Link
-      href={`/blog/${blog.slug}`}
-      className="group rounded-xl overflow-hidden shadow-md bg-white hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+      href={`/bai-viet/${blog.slug}`}
+      className="flex bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition group relative"
     >
-      <div className="relative h-48 w-full">
+      <div className="relative flex-shrink-0 w-2/5 h-40 md:h-48">
         <Image
           src={blog.image}
           alt={blog.title}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
+
+        <div className="absolute top-2 left-2 bg-teal-600 text-white rounded-full w-12 h-12 flex flex-col items-center justify-center text-center shadow-lg">
+          <div className="text-sm font-bold leading-tight">{day}</div>
+          <div className="text-[10px] uppercase leading-tight">{month}</div>
+        </div>
       </div>
-      <div className="p-4">
-        <span className="text-sm text-pink-600 font-medium">{blog.category}</span>
-        <h3 className="text-lg font-semibold mt-2 group-hover:text-pink-600 transition-colors">
+
+      <div className="p-4 w-3/5 flex flex-col justify-start">
+        <h3 className="text-md md:text-lg font-semibold mb-1 group-hover:text-teal-600 transition-colors line-clamp-2 min-h-[48px]">
           {blog.title}
         </h3>
-        <p className="text-gray-600 text-sm mt-1 line-clamp-2">{blog.excerpt}</p>
+        <p className="text-sm text-gray-600 line-clamp-2">{blog.excerpt}</p>
       </div>
     </Link>
   );

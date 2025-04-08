@@ -21,7 +21,7 @@ export default function CategoryFilter() {
         <button
           key={cat}
           onClick={() => handleFilter(cat)}
-          className="px-4 py-2 border border-gray-300 rounded-full bg-white hover:bg-pink-50 text-gray-700 hover:text-pink-600 transition-all"
+          className="px-4 py-2 border border-gray-300 rounded-full bg-white hover:bg-teal-50 text-gray-700 hover:text-teal-500 transition-all"
         >
           {cat}
         </button>

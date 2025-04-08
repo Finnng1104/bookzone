@@ -149,15 +149,15 @@ const BookDetail = () => {
             {/* Book Info */}
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold mb-3">{book.title}</h1>
-              <p className="text-teal-200 mb-4">bởi <span className="font-semibold">{book.author}</span></p>
+              <p className="text-white mb-4">bởi <span className="font-semibold">{book.author}</span></p>
 
               <div className="flex items-center gap-6 text-teal-100 mb-6">
                 <div className="flex items-center gap-2">
-                  <FaEye className="text-teal-300" />
+                  <FaEye className="text-white" />
                   <span>{book.views} lượt xem</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <FaHeart className="text-teal-300" />
+                  <FaHeart className="text-white" />
                   <span>{book.favorites} yêu thích</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -220,8 +220,8 @@ const BookDetail = () => {
                 onClick={() => setActiveTab(tab)}
                 className={`flex-1 py-4 text-center font-medium transition-colors ${
                   activeTab === tab
-                    ? "text-teal-600 border-b-2 border-teal-600"
-                    : "text-gray-600 hover:text-teal-600"
+                    ? "text-black border-b-2 border-black"
+                    : "text-gray-600 hover:text-black"
                 }`}
               >
                 {tab === "description" && "Mô tả sách"}

@@ -5,7 +5,7 @@ import HeroBanner from "@/components/banner/HeroBanner";
 import NewsSection from "@/components/ui/NewsSection";
 
 const getBooks = async () => {
-  const category = encodeURIComponent("Quản trị");
+  const category = encodeURIComponent("Quản Trị");
   const res = await fetch(`http://localhost:8080/api/books/category/${category}?limit=12`, {
     cache: "no-store",
   });

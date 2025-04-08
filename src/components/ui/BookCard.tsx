@@ -23,6 +23,12 @@ interface BookCardProps {
   userId: string;
 }
 
+interface WishlistItem {
+  _id: string;
+  bookId: string;
+  userId: string;
+}
+
 const BookCard: React.FC<BookCardProps> = ({
   image,
   title,
@@ -37,7 +43,6 @@ const BookCard: React.FC<BookCardProps> = ({
   userId,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
-  const [hasShownError, setHasShownError] = useState(false);
   const [loadingWishlist, setLoadingWishlist] = useState(false);
 
   const router = useRouter();
@@ -45,7 +50,7 @@ const BookCard: React.FC<BookCardProps> = ({
   const { mutateAsync: addToWishlistAsync } = usePostWishlist();
   const { mutateAsync: removeFromWishlistAsync } = useDeleteWishlist();
 
-  const isInWishlist = wishlistData?.wishlist?.some((item: any) => item.bookId === bookId);
+  const isInWishlist = wishlistData?.wishlist?.some((item: WishlistItem) => item.bookId === bookId);
 
   const handleWishlistClick = async () => {
     try {
@@ -66,7 +71,7 @@ const BookCard: React.FC<BookCardProps> = ({
       }
     
       if (isInWishlist) {
-        const wishlistItem = wishlistData?.wishlist?.find((item: any) => item.bookId === bookId);
+        const wishlistItem = wishlistData?.wishlist?.find((item: WishlistItem) => item.bookId === bookId);
         if (wishlistItem) {
           await removeFromWishlistAsync(wishlistItem._id);
           toast.success("Đã xoá khỏi danh sách yêu thích!");
@@ -76,21 +81,17 @@ const BookCard: React.FC<BookCardProps> = ({
         const response = await addToWishlistAsync({ bookId, userId: user.id });
         if (response?.status === "Success") {
           toast.success("Đã thêm vào danh sách yêu thích!");
-          setHasShownError(false);
           refetch();
-          router.push("/wishlist");
         }
       }
-    } catch (error: any) {
-  
-      if (error?.response?.data?.message) {
-        toast.error(error.response.data.message);
+    } catch (error: unknown) {
+      if (error && typeof error === "object" && "response" in error && error.response && typeof error.response === "object" && "data" in error.response) {
+        const typedError = error as { response: { data: { message: string } } };
+        toast.error(typedError.response.data.message);
       } else {
         toast.error("Có lỗi xảy ra khi xử lý yêu thích.");
       }
-    
-      setHasShownError(true);
-    } finally {
+    }finally {
       setLoadingWishlist(false);
     }
   };
