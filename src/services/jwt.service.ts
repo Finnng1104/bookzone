@@ -11,7 +11,7 @@ interface TokenPayload {
 
 export const generalAccessToken = (payload: TokenPayload): string => {
   return jwt.sign(payload, process.env.ACCESS_TOKEN as string, {
-    expiresIn: "1h",
+    expiresIn: "365d",
   });
 };
 
