@@ -3,23 +3,24 @@
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaStar, FaTrash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useParams } from "next/navigation";
 import Cookies from "js-cookie";
 import Image from "next/image";
+
 const LIMIT = 5;
 
 interface Review {
+  _id: string;
+  userId: {
     _id: string;
-    userId: {
-      _id: string;
-      fullname: string;
-      avatar?: string;
-    };
-    rating: number;
-    comment: string;
-    createdAt: string;
-  }
+    fullname: string;
+    avatar?: string;
+  };
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
 
 const ReviewSection = () => {
   const { slug } = useParams();
@@ -33,6 +34,7 @@ const ReviewSection = () => {
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [total, setTotal] = useState(0);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+
   const userCookie = Cookies.get("user");
   const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
   const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -56,7 +58,6 @@ const ReviewSection = () => {
       });
 
       const { reviews: newReviews, totalPages, total } = response.data;
-
       setReviews(newReviews);
       setTotalPages(totalPages);
       setPage(currentPage);
@@ -97,8 +98,7 @@ const ReviewSection = () => {
         });
         toast.success("Cập nhật đánh giá thành công!");
         setEditingReviewId(null);
-
-      } else  {
+      } else {
         await axios.post(
           `${NEXT_PUBLIC_API_URL}/api/reviews`,
           {
@@ -114,24 +114,22 @@ const ReviewSection = () => {
           }
         );
         toast.success("Đã gửi đánh giá!");
-
       }
+
       setComment("");
       setRating(5);
       fetchReviews(1);
-    }catch (error: unknown) {
-        console.error("Error submitting review:", error);
-      
-        let errorMessage = "Có lỗi xảy ra khi gửi đánh giá!";
-      
-        if (axios.isAxiosError(error)) {
-          errorMessage = error.response?.data?.message || errorMessage;
-        }
-      
-        toast.error(errorMessage);
-      } finally {
-        setLoading(false);
-      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      console.error("Error submitting review:", err);
+    
+      const errorMessage =
+        err.response?.data?.message || "Có lỗi xảy ra khi gửi đánh giá!";
+    
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async (reviewId: string) => {
@@ -163,17 +161,16 @@ const ReviewSection = () => {
   };
 
   return (
-    <div className=" bg-white rounded-lg p-6 shadow-md">
+    <div className="bg-white rounded-lg p-4 sm:p-6 shadow-md">
       <h3 className="font-semibold text-lg mb-4">Đánh giá sách 📖</h3>
 
-      {/* Form */}
       <div className="mb-6">
         <div className="flex items-center mb-4">
           {[1, 2, 3, 4, 5].map((star) => (
             <FaStar
               key={star}
               onClick={() => setRating(star)}
-              className={`cursor-pointer text-2xl transition-colors ${
+              className={`cursor-pointer text-xl sm:text-2xl transition-colors ${
                 star <= rating ? "text-yellow-400" : "text-gray-300"
               }`}
             />
@@ -188,31 +185,32 @@ const ReviewSection = () => {
           onChange={(e) => setComment(e.target.value)}
         />
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className={`mt-3 px-6 py-2 rounded-lg text-white transition w-full sm:w-auto ${
-            loading ? "bg-pink-400 cursor-not-allowed" : "bg-pink-600 hover:bg-pink-700"
-          }`}
-        >
-          {loading ? "Đang gửi..." : editingReviewId ? "Cập nhật đánh giá" : "Gửi đánh giá"}
-        </button>
-
-        {editingReviewId && (
+        <div className="flex flex-col sm:flex-row gap-2 mt-3">
           <button
-            onClick={() => {
-              setEditingReviewId(null);
-              setComment("");
-              setRating(5);
-            }}
-            className="mt-2 text-sm text-gray-500 underline"
+            onClick={handleSubmit}
+            disabled={loading}
+            className={`flex-1 sm:flex-none sm:w-auto px-6 py-2 rounded-lg text-white transition ${
+              loading ? "bg-pink-400 cursor-not-allowed" : "bg-pink-600 hover:bg-pink-700"
+            }`}
           >
-            Huỷ chỉnh sửa
+            {loading ? "Đang gửi..." : editingReviewId ? "Cập nhật đánh giá" : "Gửi đánh giá"}
           </button>
-        )}
+
+          {editingReviewId && (
+            <button
+              onClick={() => {
+                setEditingReviewId(null);
+                setComment("");
+                setRating(5);
+              }}
+              className="text-sm text-gray-500 underline"
+            >
+              Huỷ chỉnh sửa
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Filter Rating */}
       <div className="mb-4 flex flex-wrap gap-2">
         {[
           { label: "Tất cả", value: null },
@@ -225,9 +223,9 @@ const ReviewSection = () => {
           <button
             key={filter.label}
             onClick={() => handleFilterRating(filter.value)}
-            className={`px-3 py-1 rounded-lg border ${
+            className={`px-3 py-1 rounded-lg border text-sm ${
               filterRating === filter.value
-                ? "bg-pink-600 text-white border-pink-600"
+                ? "bg-secondary text-white border-pink-600"
                 : "bg-white text-gray-700 border-gray-300 hover:bg-pink-100"
             }`}
           >
@@ -237,105 +235,103 @@ const ReviewSection = () => {
       </div>
 
       {!loadingList && (
-  <p className="text-sm text-gray-600 mb-4">
-    Hiển thị <strong className="text-pink-600">{total}</strong> đánh giá
-  </p>
-)}
+        <p className="text-sm text-gray-600 mb-4">
+          Hiển thị <strong className="text-secondary">{total}</strong> đánh giá
+        </p>
+      )}
 
-      {/* List */}
-<div>
-  <h4 className="font-medium mb-3">Danh sách đánh giá 📝</h4>
+      <div>
+        <h4 className="font-medium mb-3">Danh sách đánh giá 📝</h4>
 
-  {loadingList ? (
-    <p className="text-gray-500 text-sm">Đang tải đánh giá...</p>
-  ) : reviews.length === 0 ? (
-    <p className="text-gray-500 text-sm">Chưa có đánh giá nào.</p>
-  ) : (
-    <div className="space-y-4">
-      {reviews.map((review) => (
-        <div
-          key={review._id}
-          className="flex gap-4 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow"
-        >
-          <div className="flex-shrink-0">
-            <Image
-              src={review.userId?.avatar || "/default-avatar.jpg"}
-              alt="Avatar"
-              width={48}
-              height={48}
-              className="rounded-full object-cover ring-2 ring-white"
-            />
-          </div>
+        {loadingList ? (
+          <p className="text-gray-500 text-sm">Đang tải đánh giá...</p>
+        ) : reviews.length === 0 ? (
+          <p className="text-gray-500 text-sm">Chưa có đánh giá nào.</p>
+        ) : (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <div
+                key={review._id}
+                className="flex flex-col sm:flex-row gap-4 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow"
+              >
+                <div className="flex-shrink-0">
+                  <Image
+                    src={review.userId?.avatar || "/default-avatar.jpg"}
+                    alt="Avatar"
+                    width={48}
+                    height={48}
+                    className="rounded-full object-cover ring-2 ring-white"
+                  />
+                </div>
 
-          <div className="flex-1 space-y-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-medium text-gray-900">
-                  {review.userId?.fullname || "Người dùng ẩn danh"}
-                </h4>
-                <div className="flex items-center gap-2">
-                  <div className="flex">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <FaStar
-                        key={star}
-                        className={`${
-                          star <= review.rating ? "text-yellow-400" : "text-gray-200"
-                        } text-sm`}
-                      />
-                    ))}
+                <div className="flex-1 space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <h4 className="font-medium text-gray-900">
+                        {review.userId?.fullname || "Người dùng ẩn danh"}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <FaStar
+                              key={star}
+                              className={`${
+                                star <= review.rating ? "text-yellow-400" : "text-gray-200"
+                              } text-sm`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          {formatDate(review.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {currentUserId === review.userId?._id && (
+                      <div className="flex items-center gap-3 mt-2 sm:mt-0">
+                        <button
+                          onClick={() => handleEdit(review)}
+                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Sửa đánh giá"
+                        >
+                          <FaEdit className="text-blue-600 text-lg" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(review._id)}
+                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Xoá đánh giá"
+                        >
+                          <FaTrash className="text-red-600 text-lg" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {formatDate(review.createdAt)}
-                  </span>
+
+                  <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
                 </div>
               </div>
-
-              {currentUserId === review.userId?._id && (
-  <div className="flex items-center gap-3">
-    <button
-      onClick={() => handleEdit(review)}
-      className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
-      title="Sửa đánh giá"
-    >
-      <FaEdit className="text-blue-600 text-lg" />
-    </button>
-    <button
-      onClick={() => handleDelete(review._id)}
-      className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-      title="Xoá đánh giá"
-    >
-      <FaTrash className="text-red-600 text-lg" />
-    </button>
-  </div>
-)}
-            </div>
-
-            <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
+            ))}
           </div>
-        </div>
-      ))}
-    </div>
-  )}
+        )}
 
-  {/* Pagination */}
-  {totalPages > 1 && (
-    <div className="mt-6 flex justify-center gap-2">
-      {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNumber) => (
-        <button
-          key={pageNumber}
-          onClick={() => handlePageChange(pageNumber)}
-          className={`px-3 py-1 rounded transition-all ${
-            pageNumber === page
-              ? "bg-pink-600 text-white shadow-md transform -translate-y-0.5"
-              : "bg-gray-200 text-gray-700 hover:bg-pink-100"
-          }`}
-        >
-          {pageNumber}
-        </button>
-      ))}
-    </div>
-  )}
-</div>
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center gap-2">
+            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNumber) => (
+              <button
+                key={pageNumber}
+                onClick={() => handlePageChange(pageNumber)}
+                className={`px-3 py-1 rounded transition-all text-sm ${
+                  pageNumber === page
+                    ? "bg-pink-600 text-white shadow-md transform -translate-y-0.5"
+                    : "bg-gray-200 text-gray-700 hover:bg-pink-100"
+                }`}
+              >
+                {pageNumber}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

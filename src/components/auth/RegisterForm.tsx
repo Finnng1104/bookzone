@@ -170,6 +170,7 @@ if (response?.user) {
         >
           {showPassword ? <IoIosEyeOff size={20} /> : <IoIosEye size={20} />}
         </button>
+        <p className="text-gray-400 text-sm mt-1">Mật khẩu có ít nhất 8 ký tự bao gồm: <br></br>1 ký tự đặc biệt, 1 chữ in hoa, 1 in thường và 1 số</p>
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">{errors.password}</p>
         )}

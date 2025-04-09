@@ -78,7 +78,7 @@ const LoginForm: React.FC = () => {
         toast.success("Đăng nhập thành công!");
         setTimeout(() => {
           router.push("/");
-        }, 1000);
+        }, 1);
       } catch {
         toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.");
       }

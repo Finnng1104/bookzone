@@ -155,7 +155,7 @@ const BookCard: React.FC<BookCardProps> = ({
 
       {/* Product Info */}
       <div className="p-3 md:p-4">
-        <Link href={`/product/${slug}`}>
+        <Link href={`/ebook/${slug}`}>
           <div className="space-y-2">
             {/* Category */}
             {displayCategories.length > 0 && (

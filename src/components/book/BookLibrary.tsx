@@ -96,7 +96,7 @@ const BookLibrary = () => {
       {loading ? (
               <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
                 <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
-                <p className="text-lg">Đang tải danh sách yêu thích...</p>
+                <p className="text-lg">Đang tải sách theo danh mục...</p>
               </div>
       ) : books.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center text-gray-500 mt-12 space-y-4">

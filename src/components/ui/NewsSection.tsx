@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from "react";
 import NewsCard from "./NewsCard";
+import { Swiper, SwiperSlide } from "swiper/react";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 interface Article {
   id: number;
@@ -12,7 +16,7 @@ interface Article {
   author: string;
   date: string;
   content: string;
-  recommend: boolean; // ✅ Recommend nên để boolean, không phải string
+  recommend: boolean;
 }
 
 const NewsSection = () => {
@@ -30,7 +34,6 @@ const NewsSection = () => {
 
         const featured = data.filter(article => article.recommend).slice(0, 6);
         setFeaturedArticles(featured);
-
       } catch (error) {
         console.error("Error loading articles:", error);
       }
@@ -41,7 +44,6 @@ const NewsSection = () => {
 
   return (
     <section className="w-full xl:container mx-auto px-4 py-8">
-      {/* Tiêu đề */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">Tin tức – bài viết mới cập nhật</h2>
         <p className="text-gray-600 text-sm">
@@ -49,9 +51,8 @@ const NewsSection = () => {
         </p>
       </div>
 
-      {/* Grid chính */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Cột bài viết lớn */}
+      {/* PC layout */}
+      <div className="hidden lg:grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
           {articles.map((article) => (
             <NewsCard
@@ -59,13 +60,12 @@ const NewsSection = () => {
               image={article.image}
               title={article.title}
               description={article.excerpt}
-              slug={article.slug} // ✅ Thêm link slug cho card chính
+              slug={article.slug}
             />
           ))}
         </div>
 
-        {/* Cột danh sách bài viết nổi bật */}
-        <div className="hidden lg:block border-l border-gray-200 pl-6">
+        <div className="border-l border-gray-200 pl-6">
           <h3 className="text-lg font-bold mb-4">Bài viết nổi bật</h3>
           <div className="space-y-4">
             {featuredArticles.map((article) => (
@@ -74,11 +74,31 @@ const NewsSection = () => {
                 image={article.image}
                 title={article.title}
                 isSmall={true}
-                slug={article.slug} 
+                slug={article.slug}
               />
             ))}
           </div>
         </div>
+      </div>
+
+      {/* Mobile Swiper layout */}
+      <div className="lg:hidden">
+        <Swiper
+          spaceBetween={16}
+          slidesPerView={1.1}
+          grabCursor={true}
+        >
+          {articles.map((article) => (
+            <SwiperSlide key={article.id}>
+              <NewsCard
+                image={article.image}
+                title={article.title}
+                description={article.excerpt}
+                slug={article.slug}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   );

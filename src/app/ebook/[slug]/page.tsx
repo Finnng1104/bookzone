@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FaHeart, FaBookOpen, FaStar, FaEye, FaDownload, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaBookOpen, FaStar, FaEye, FaDownload, FaRegHeart, FaSpinner } from "react-icons/fa";
 import { usePostWishlist } from "@/hooks/useWishlist";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -94,7 +94,6 @@ const BookDetail = () => {
         toast.success("Đã thêm vào danh sách yêu thích!");
         setIsFavorite(true);
         setHasShownError(false);
-        router.push("/wishlist");
       } else {
         alert("Thêm vào yêu thích thất bại.");
       }
@@ -107,8 +106,9 @@ const BookDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
+          <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+          <p className="text-lg">Đang tải sách...</p>
       </div>
     );
   }
@@ -129,11 +129,9 @@ const BookDetail = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
       <div className="bg-gradient-to-b from-teal-600 to-teal-800 text-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            {/* Book Cover */}
             <div className="w-full md:w-1/3 lg:w-1/4">
               <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
                 <Image
@@ -146,7 +144,6 @@ const BookDetail = () => {
               </div>
             </div>
 
-            {/* Book Info */}
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold mb-3">{book.title}</h1>
               <p className="text-white mb-4">bởi <span className="font-semibold">{book.author}</span></p>
@@ -209,9 +206,7 @@ const BookDetail = () => {
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="container mx-auto px-4 py-8">
-        {/* Tabs */}
         <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
           <div className="flex border-b">
             {["description", "author", "reviews"].map((tab) => (
@@ -231,15 +226,15 @@ const BookDetail = () => {
             ))}
           </div>
 
-          <div className="p-6">
+          <div className=" px-0 md:p-6">
             {activeTab === "description" && (
-              <div className="prose max-w-none text-gray-700">
+              <div className="prose max-w-none p-6 md:p-0  text-gray-700">
                 <p>{book.description || "Chưa có mô tả cho sách này."}</p>
               </div>
             )}
 
             {activeTab === "author" && (
-              <div className="text-gray-700">
+              <div className="text-gray-700 p-6 md:p-0">
                 <h2 className="text-xl font-bold mb-2">Giới thiệu tác giả</h2>
                 <p>
                   <span className="font-semibold">{book.author}</span> là một nhà văn nổi tiếng với nhiều tác phẩm được yêu thích.
@@ -251,7 +246,6 @@ const BookDetail = () => {
           </div>
         </div>
 
-        {/* Notice Box */}
         <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 mb-8">
           <h3 className="text-teal-800 font-semibold mb-4">Lưu ý quan trọng</h3>
           <div className="space-y-3">
@@ -268,7 +262,6 @@ const BookDetail = () => {
           </div>
         </div>
 
-        {/* Related Books */}
         {book.category && book.category.length > 0 && (
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Sách liên quan</h2>

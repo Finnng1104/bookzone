@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
-import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
+import Image from "next/image";
+import { FaHandsHelping } from "react-icons/fa";
 
 const MobileFooter = () => {
   const [activeSection, setActiveSection] = useState<string | null>(null);
@@ -11,33 +12,25 @@ const MobileFooter = () => {
 
   return (
     <footer className="bg-primary text-white py-8 px-4">
-      {/* 🔹 Đăng ký nhận tin */}
-      <div className="bg-gradient-to-r from-primary to-opacity-80 py-6 px-4 rounded-lg text-center mb-6">
-        <h4 className="text-lg font-bold text-white mb-2">Đăng ký nhận tin tức!</h4>
-        <p className="text-sm text-gray-200 mb-4">
-          Nhận các chương trình ưu đãi và thông tin khuyến mãi mới nhất từ chúng tôi.
-        </p>
-        <form className="flex flex-col items-center gap-3">
-          <input
-            type="email"
-            placeholder="Nhập email của bạn"
-            className="p-3 rounded-md border border-gray-400 bg-white text-black text-sm focus:outline-none w-full"
-          />
-          <button
-            type="submit"
-            className="bg-white text-primary font-semibold py-2 px-6 rounded-md hover:bg-gray-200 transition"
-          >
-            Đăng ký
-          </button>
-        </form>
+      <div className="flex justify-center mb-6 overflow-hidden h-[100px]">
+        <Image
+          src="/logo/logoamban.png"
+          alt="logo"
+          width={160}
+          height={100}
+          className="object-contain"
+        />
       </div>
 
-      {/* 🔹 Điều hướng và thông tin */}
       <div>
         {[
           {
-            title: "Bookzone",
-            content: "Cửa hàng sách, mang đến những sản phẩm sách chất lượng và hoàn toàn miễn phí.",
+            title: "Giới Thiệu",
+            content: (
+              <p className="text-sm leading-relaxed">
+                BookZone là cửa hàng sách trực tuyến, chuyên cung cấp những đầu sách đa dạng về thể loại và hoàn toàn miễn phí cho cộng đồng yêu sách. Chúng tôi cam kết mang đến trải nghiệm đọc sách thân thiện và luôn cập nhật kho sách mới mỗi ngày, giúp bạn mở rộng tri thức và nuôi dưỡng niềm đam mê đọc sách bền vững.
+              </p>
+            ),
           },
           {
             title: "Điều Hướng",
@@ -59,38 +52,66 @@ const MobileFooter = () => {
             ),
           },
           {
-            title: "Chính Sách",
+            title: "Đội Ngũ Phát Triển",
             content: (
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/privacy" className="hover:text-gray-300">Chính sách bảo mật</Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="hover:text-gray-300">Điều khoản sử dụng</Link>
-                </li>
-                <li>
-                  <Link href="/shipping" className="hover:text-gray-300">Chính sách giao hàng</Link>
-                </li>
-                <li>
-                  <Link href="/returns" className="hover:text-gray-300">Chính sách đổi trả</Link>
-                </li>
+              <ul className="space-y-4 text-sm">
+                {[
+                  {
+                    name: "Nguyễn Thanh Tiến",
+                    role: "Frontend Developer • LinkedIn",
+                    link: "https://www.linkedin.com/in/finnng1104/",
+                    avatar: "/avatars/thanhtien.jpg",
+                  },
+                  {
+                    name: "Lâm Gia Bảo",
+                    role: "Frontend Developer • Facebook",
+                    link: "https://www.facebook.com/share/1F5YNfuEFH/?mibextid=wwXIfr",
+                    avatar: "/avatars/giabao.jpg",
+                  },
+                  {
+                    name: "Nguyễn Ngọc Mỹ",
+                    role: "Backend Developer • GitHub",
+                    link: "https://github.com/tran-minh",
+                    avatar: "/avatars/Ngocmy.png",
+                  },
+                ].map((member) => (
+                  <li key={member.name} className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-white">
+                      <Image
+                        src={member.avatar}
+                        alt={member.name}
+                        width={40}
+                        height={40}
+                        className="object-cover w-full h-full"
+                      />
+                    </div>
+                    <div>
+                      <p className="font-medium">{member.name}</p>
+                      <a
+                        href={member.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-300 hover:text-white text-xs"
+                      >
+                        {member.role}
+                      </a>
+                    </div>
+                  </li>
+                ))}
               </ul>
             ),
           },
           {
             title: "Liên Hệ",
             content: (
-              <div className="text-sm">
-                <p>
-                  Hotline: <span className="font-semibold">1900 277 237</span>
-                </p>
-                <p>
-                  Email:{" "}
-                  <a href="mailto:support@bookzone.vn" className="hover:text-gray-300">
-                    support@bookzone.vn
+              <div className="text-sm space-y-1">
+                <p>Hotline: <span className="font-semibold">0376 491 104</span></p>
+                <p>Email:{" "}
+                  <a href="mailto:tiennt1104@gmail.com" className="hover:text-gray-300">
+                    tiennt1104@gmail.com
                   </a>
                 </p>
-                <p>Địa chỉ: Tầng 4, Toà nhà X, TP Hà Nội</p>
+                <p>Địa chỉ: QTSC 9 Building, Đ. Tô Ký, Tân Chánh Hiệp, Quận 12, Hồ Chí Minh</p>
               </div>
             ),
           },
@@ -112,7 +133,7 @@ const MobileFooter = () => {
             <div
               className={`overflow-hidden transition-all duration-700 ease-in-out ${
                 activeSection === section.title
-                  ? "opacity-100 max-h-[400px] translate-y-0"
+                  ? "opacity-100 max-h-[500px] translate-y-0"
                   : "opacity-0 max-h-0 -translate-y-4"
               }`}
             >
@@ -122,20 +143,12 @@ const MobileFooter = () => {
         ))}
       </div>
 
-      {/* 🔹 Mạng xã hội */}
-      <div className="mt-6 flex justify-center space-x-4">
-        <Link href="#" className="hover:text-gray-300">
-          <FaFacebookF className="h-6 w-6 text-white" />
-        </Link>
-        <Link href="#" className="hover:text-gray-300">
-          <FaInstagram className="h-6 w-6 text-white" />
-        </Link>
-        <Link href="#" className="hover:text-gray-300">
-          <FaTwitter className="h-6 w-6 text-white" />
-        </Link>
-        <Link href="#" className="hover:text-gray-300">
-          <FaYoutube className="h-6 w-6 text-white" />
-        </Link>
+      <div className="mt-6 text-center text-sm text-white">
+        <div className="flex justify-center items-center mb-2">
+          <FaHandsHelping className="mr-2 text-secondary" size={18} />
+          <span>Cảm ơn bạn đã sử dụng BookZone!</span>
+        </div>
+        <p>Chúng tôi luôn nỗ lực mỗi ngày để cập nhật kho sách phong phú và hữu ích dành cho cộng đồng.</p>
       </div>
     </footer>
   );
