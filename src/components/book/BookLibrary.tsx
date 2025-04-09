@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import FilterBar from "../ui/Filter";
 import { useRouter, usePathname } from "next/navigation";
+import { FaSpinner } from "react-icons/fa";
 
 const BookLibrary = () => {
   const [books, setBooks] = useState<IBook[]>([]);
@@ -93,10 +94,10 @@ const BookLibrary = () => {
         </div>
       )}
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-600"></div>
-          <p className="ml-3 text-gray-500">Đang tải sách...</p>
-        </div>
+              <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
+                <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+                <p className="text-lg">Đang tải danh sách yêu thích...</p>
+              </div>
       ) : books.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center text-gray-500 mt-12 space-y-4">
           <div className="text-5xl">📚</div>

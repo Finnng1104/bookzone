@@ -64,7 +64,7 @@ const BookList: React.FC<BookListProps> = ({
             thống.
           </p>
           <Link
-            href="/thu-vien-sach"
+            href="/danh-muc-sach"
             className="mt-2 inline-block px-5 py-2 bg-primary text-white rounded-full hover:bg-opacity-90 transition"
           >
             🔄 Xem tất cả sách

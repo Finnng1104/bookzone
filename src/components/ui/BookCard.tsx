@@ -43,7 +43,6 @@ const BookCard: React.FC<BookCardProps> = ({
   userId,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
-  const [loadingWishlist, setLoadingWishlist] = useState(false);
 
   const router = useRouter();
   const { data: wishlistData, refetch } = useGetWishlist(userId);
@@ -54,7 +53,6 @@ const BookCard: React.FC<BookCardProps> = ({
 
   const handleWishlistClick = async () => {
     try {
-      setLoadingWishlist(true);
     
       const userCookie = Cookies.get("user");
       if (!userCookie) {
@@ -92,7 +90,6 @@ const BookCard: React.FC<BookCardProps> = ({
         toast.error("Có lỗi xảy ra khi xử lý yêu thích.");
       }
     }finally {
-      setLoadingWishlist(false);
     }
   };
 
@@ -144,13 +141,10 @@ const BookCard: React.FC<BookCardProps> = ({
           <button
             className={`bg-white p-2 rounded-full hover:bg-secondary hover:text-white transition-all duration-300 shadow-md transform hover:scale-110 ${
               isInWishlist ? "text-red-500" : "text-gray-500"
-            } ${loadingWishlist ? "opacity-50 cursor-not-allowed" : ""}`}
+            } `}
             onClick={handleWishlistClick}
-            disabled={loadingWishlist}
           >
-            {loadingWishlist ? (
-              <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></span>
-            ) : isInWishlist ? (
+           {isInWishlist ? (
               <FaHeart size={16} />
             ) : (
               <FaRegHeart size={16} />

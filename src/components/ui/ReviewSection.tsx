@@ -34,7 +34,8 @@ const ReviewSection = () => {
   const [total, setTotal] = useState(0);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
   const userCookie = Cookies.get("user");
-const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
+  const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
+  const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -50,7 +51,7 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
     if (!slug) return;
     setLoadingList(true);
     try {
-      const response = await axios.get(`http://localhost:8080/api/reviews`, {
+      const response = await axios.get(`${NEXT_PUBLIC_API_URL}/api/reviews`, {
         params: { slug, page: currentPage, limit: LIMIT, rating: selectedRating || undefined },
       });
 
@@ -90,17 +91,16 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
       const user = JSON.parse(userCookie);
 
       if (editingReviewId) {
-        // Update review
-        await axios.put(`http://localhost:8080/api/reviews/${editingReviewId}`, {
+        await axios.put(`${NEXT_PUBLIC_API_URL}/api/reviews/${editingReviewId}`, {
           rating,
           comment,
         });
         toast.success("Cập nhật đánh giá thành công!");
         setEditingReviewId(null);
-      } else {
-        // Create new review
+
+      } else  {
         await axios.post(
-          `http://localhost:8080/api/reviews`,
+          `${NEXT_PUBLIC_API_URL}/api/reviews`,
           {
             userId: user.id,
             slug,
@@ -114,8 +114,8 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
           }
         );
         toast.success("Đã gửi đánh giá!");
-      }
 
+      }
       setComment("");
       setRating(5);
       fetchReviews(1);
@@ -136,7 +136,7 @@ const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
 
   const handleDelete = async (reviewId: string) => {
     try {
-      await axios.delete(`http://localhost:8080/api/reviews/${reviewId}`);
+      await axios.delete(`${NEXT_PUBLIC_API_URL}/api/reviews/${reviewId}`);
       toast.success("Đã xoá đánh giá!");
       fetchReviews(page);
     } catch (error) {

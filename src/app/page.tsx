@@ -42,7 +42,7 @@ const Home = async () => {
         title="Top eBook Hot"
         description="Tổng hợp những eBook tải về nhiều nhất trong tháng."
         buttonText="Xem thêm EBOOK HOT"
-        buttonLink="/thu-vien-sach?type=category&q=Hot"
+        buttonLink="/danh-muc-sach?type=category&q=Hot"
         books={hotbooks}
       />
 
@@ -50,7 +50,7 @@ const Home = async () => {
         title="Sách Quản trị"
         description="Tổng hợp những cuốn sách hay nhất về quản trị, giúp bạn nâng cao kỹ năng lãnh đạo và quản lý."
         buttonText="Xem thêm sách Quản trị"
-        buttonLink="/thu-vien-sach?type=category&q=Quản Trị"
+        buttonLink="/danh-muc-sach?type=category&q=Quản Trị"
         books={books}
       />
 

@@ -74,7 +74,7 @@ const NewsSection = () => {
                 image={article.image}
                 title={article.title}
                 isSmall={true}
-                slug={article.slug} // ✅ Thêm link slug cho card nhỏ
+                slug={article.slug} 
               />
             ))}
           </div>
