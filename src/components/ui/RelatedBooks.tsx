@@ -11,12 +11,13 @@ interface RelatedBooksProps {
 const RelatedBooks: React.FC<RelatedBooksProps> = ({ category }) => {
   const [books, setBooks] = useState<IBook[]>([]);
   const [loading, setLoading] = useState(true);
+  const NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchRelatedBooks = async () => {
       try {
         const encodedCategory = encodeURIComponent(category);
-        const res = await fetch(`http://localhost:8080/api/books/category/${encodedCategory}?limit=6`);
+        const res = await fetch(`${NEXT_PUBLIC_API_URL}/api/books/category/${encodedCategory}?limit=6`);
         const data = await res.json();
 
         if (res.ok && data.success && Array.isArray(data.data)) {

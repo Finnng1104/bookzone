@@ -33,7 +33,7 @@ const Header = () => {
   const handleSearch = () => {
     if (!search.trim()) return;
     const query = encodeURIComponent(search.trim());
-    window.location.href = `/thu-vien-sach?type=${searchType}&q=${query}`;
+    window.location.href = `/danh-muc-sach?type=${searchType}&q=${query}`;
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -103,7 +103,7 @@ const Header = () => {
           <nav className="hidden lg:flex flex-grow justify-center space-x-8">
             {[
               { name: "Trang chủ", link: "/" },
-              { name: "Thư viện sách", link: "/thu-vien-sach" },
+              { name: "Danh mục sách", link: "/danh-muc-sach" },
               { name: "Bài viết", link: "/bai-viet" },
             ].map((item) => {
               const isActive = pathname === item.link;
@@ -118,7 +118,6 @@ const Header = () => {
                 >
                   {item.name}
 
-                  {/* Underline effect */}
                   <span
                     className={`absolute left-0 bottom-0 h-0.5 bg-secondary transition-all duration-300
             ${isActive ? "" : "w-0 group-hover:w-full"}
@@ -260,11 +259,11 @@ const Header = () => {
                   Trang chủ
                 </Link>
                 <Link
-                  href="/thu-vien-sach"
+                  href="/danh-muc-sach"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="text-primary hover:text-opacity-80 font-medium py-2 border-b border-gray-100"
                 >
-                  Thư viện sách
+                  Danh mục sách
                 </Link>
                 <Link
                   href="/bai-viet"
