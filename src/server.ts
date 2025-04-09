@@ -12,7 +12,7 @@ app.use(cookieParser());
 dotenv.config();
 connectDB();
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: ['https://bookzone-black.vercel.app/', 'bookzone.io.vn', 'http://localhost:3000'],
   credentials: true,
 }));
 app.use(express.json());
