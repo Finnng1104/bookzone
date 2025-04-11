@@ -197,7 +197,6 @@ const Header = () => {
                   </span>
                 </button>
 
-                {/* Dropdown menu */}
                 {dropdownOpen && (
                   <div
                     className="absolute right-0 mt-2 py-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
@@ -281,7 +280,6 @@ const Header = () => {
         {isMobileSearchOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 p-4 animate-fadeIn">
             <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl animate-scaleIn px-4 py-6 space-y-4">
-              {/* Nút đóng */}
               <button
                 className="absolute -top-3 -right-3 bg-white border border-gray-300 text-gray-600 hover:text-primary hover:border-primary rounded-full p-1 shadow-md transition-colors"
                 onClick={() => setIsMobileSearchOpen(false)}

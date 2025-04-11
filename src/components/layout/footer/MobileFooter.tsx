@@ -40,13 +40,13 @@ const MobileFooter = () => {
                   <Link href="/" className="hover:text-gray-300">Trang chủ</Link>
                 </li>
                 <li>
-                  <Link href="/thu-vien-sach" className="hover:text-gray-300">Thư viện sách</Link>
+                  <Link href="/danh-muc-sach" className="hover:text-gray-300">Danh mục sách</Link>
                 </li>
                 <li>
                   <Link href="/bai-viet" className="hover:text-gray-300">Bài viết</Link>
                 </li>
                 <li>
-                  <Link href="/lien-he" className="hover:text-gray-300">Liên hệ</Link>
+                  <Link href="/wishlist" className="hover:text-gray-300">Danh sách yêu thích</Link>
                 </li>
               </ul>
             ),
