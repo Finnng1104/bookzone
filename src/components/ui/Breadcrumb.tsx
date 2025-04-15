@@ -17,6 +17,7 @@ const pathMap: Record<string, string> = {
   "sach-moi": "Sách Mới",
   "bai-viet": "Bài Viết",
   "lien-he": "Liên Hệ",
+  "danh-muc-sach": "Danh Mục Sách",
 };
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ currentTitle }) => {

@@ -3,6 +3,8 @@ import BookList from "@/components/book/BookList";
 import FeatureList from "@/components/ui/FeatureList";
 import HeroBanner from "@/components/banner/HeroBanner";
 import NewsSection from "@/components/ui/NewsSection";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 
 

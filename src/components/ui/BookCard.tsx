@@ -104,7 +104,8 @@ const BookCard: React.FC<BookCardProps> = ({
       <div className="relative aspect-[3/4] overflow-hidden shadow-sm">
         <Link href={`/ebook/${slug}`}>
           {!imgLoaded && <div className="absolute inset-0 bg-gray-200 animate-pulse" />}
-          <Image
+            <div className="relative w-full h-full">
+            <Image
             src={image || "/images/default-product.jpg"}
             alt={title}
             className={`w-full h-full object-cover transition-transform duration-300 ${
@@ -113,8 +114,9 @@ const BookCard: React.FC<BookCardProps> = ({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
-            onLoadingComplete={() => setImgLoaded(true)}
+            onLoad={() => setImgLoaded(true)}
           />
+            </div>
         </Link>
 
         {/* Badges */}

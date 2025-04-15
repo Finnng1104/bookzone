@@ -80,7 +80,6 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
     if (slug) fetchBook();
   }, [slug]);
 
-  // Render PDF when URL or mode changes
   useEffect(() => {
     if (!fileUrl || !containerRef.current) return;
 
@@ -173,7 +172,7 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
   );
 
   return (
-    <div className="w-full px-4 py-6">
+    <div className="w-full p-0 md:px-4 py-6">
       {/* Toolbar */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm px-4 py-3">
         <div className="flex justify-between items-center xl:container mx-auto">
@@ -210,9 +209,14 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
       </div>
 
       {/* PDF Viewer */}
-      <div className="w-full flex justify-center mt-24">
-        <div ref={containerRef} className={`pdf-container flex ${dualPage ? "flex-row" : "flex-col"} w-full gap-6 bg-white border border-gray-200 shadow-lg rounded-xl p-8`} />
-      </div>
+      <div
+  ref={containerRef}
+  className={`pdf-container flex ${dualPage ? "flex-row" : "flex-col"} gap-6 bg-white border border-gray-200 shadow-lg rounded-xl p-2 sm:p-4 md:p-6`}
+  style={{
+    maxWidth: "100%",
+    width: dualPage ? "100%" : "100%",
+  }}
+/>
     </div>
   );
 };

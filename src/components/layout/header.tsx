@@ -43,7 +43,6 @@ const Header = () => {
     const userCookie = Cookies.get("user");
     if (userCookie) {
       const userData = JSON.parse(userCookie);
-      console.log("userData", userData);
       setUser(userData);
     }
   }, []);

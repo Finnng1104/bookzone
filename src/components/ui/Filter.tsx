@@ -59,7 +59,11 @@ const FilterBar = ({
                     : "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200"
                 }
               `}
-              onClick={() => onChange(filter.value)}
+              onClick={() => {
+                if (filter.value !== selectedFilter) {
+                  onChange(filter.value);
+                }
+              }}
             >
               {filter.label}
             </button>
