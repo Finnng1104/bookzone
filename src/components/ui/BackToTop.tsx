@@ -24,7 +24,7 @@ const BackToTop = () => {
 
   return (
     <button
-      className={`fixed bottom-6 right-6 bg-pink-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 ${
+      className={`fixed bottom-6 right-6 bg-accent text-white rounded-full p-4 shadow-lg transition-all duration-300 ${
         visible ? "opacity-100 scale-100" : "opacity-0 scale-0"
       }`}
       onClick={scrollToTop}

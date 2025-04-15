@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { FaEdit, FaStar, FaTrash } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from "react";
+import { FaStar } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import axios, { AxiosError } from "axios";
 import { useParams } from "next/navigation";
@@ -34,6 +34,7 @@ const ReviewSection = () => {
   const [filterRating, setFilterRating] = useState<number | null>(null);
   const [total, setTotal] = useState(0);
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const userCookie = Cookies.get("user");
   const currentUserId = userCookie ? JSON.parse(userCookie).id : null;
@@ -49,12 +50,20 @@ const ReviewSection = () => {
     return `${day}/${month}/${year} - ${hours}:${minutes}`;
   };
 
-  const fetchReviews = async (currentPage = 1, selectedRating = filterRating) => {
+  const fetchReviews = async (
+    currentPage = 1,
+    selectedRating = filterRating
+  ) => {
     if (!slug) return;
     setLoadingList(true);
     try {
       const response = await axios.get(`${NEXT_PUBLIC_API_URL}/api/reviews`, {
-        params: { slug, page: currentPage, limit: LIMIT, rating: selectedRating || undefined },
+        params: {
+          slug,
+          page: currentPage,
+          limit: LIMIT,
+          rating: selectedRating || undefined,
+        },
       });
 
       const { reviews: newReviews, totalPages, total } = response.data;
@@ -92,10 +101,13 @@ const ReviewSection = () => {
       const user = JSON.parse(userCookie);
 
       if (editingReviewId) {
-        await axios.put(`${NEXT_PUBLIC_API_URL}/api/reviews/${editingReviewId}`, {
-          rating,
-          comment,
-        });
+        await axios.put(
+          `${NEXT_PUBLIC_API_URL}/api/reviews/${editingReviewId}`,
+          {
+            rating,
+            comment,
+          }
+        );
         toast.success("Cập nhật đánh giá thành công!");
         setEditingReviewId(null);
       } else {
@@ -122,31 +134,37 @@ const ReviewSection = () => {
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       console.error("Error submitting review:", err);
-    
       const errorMessage =
         err.response?.data?.message || "Có lỗi xảy ra khi gửi đánh giá!";
-    
       toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDelete = async (reviewId: string) => {
-    try {
-      await axios.delete(`${NEXT_PUBLIC_API_URL}/api/reviews/${reviewId}`);
-      toast.success("Đã xoá đánh giá!");
-      fetchReviews(page);
-    } catch (error) {
-      console.error("Error deleting review:", error);
-      toast.error("Không thể xoá đánh giá!");
-    }
-  };
+  // const handleDelete = async (reviewId: string) => {
+  //   try {
+  //     await axios.delete(`${NEXT_PUBLIC_API_URL}/api/reviews/${reviewId}`);
+  //     toast.success("Đã xoá đánh giá!");
+  //     fetchReviews(page);
+  //   } catch (error) {
+  //     console.error("Error deleting review:", error);
+  //     toast.error("Không thể xoá đánh giá!");
+  //   }
+  // };
 
   const handleEdit = (review: Review) => {
     setEditingReviewId(review._id);
     setComment(review.comment);
     setRating(review.rating);
+
+    setTimeout(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }, 100);
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -178,22 +196,35 @@ const ReviewSection = () => {
         </div>
 
         <textarea
-          className="w-full border rounded-lg p-3 text-sm focus:outline-pink-500"
+          ref={textareaRef}
+          className="w-full border rounded-lg p-3 text-sm focus:outline-accent"
           rows={3}
           placeholder="Viết cảm nhận của bạn về cuốn sách này..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
 
+        {editingReviewId && (
+          <div className="bg-yellow-50 border border-yellow-300 text-yellow-700 px-4 py-2 rounded-md text-sm mb-3 flex items-center gap-2 animate-fadeSlide">
+            Bạn đang chỉnh sửa đánh giá.
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row gap-2 mt-3">
           <button
             onClick={handleSubmit}
             disabled={loading}
             className={`flex-1 sm:flex-none sm:w-auto px-6 py-2 rounded-lg text-white transition ${
-              loading ? "bg-pink-400 cursor-not-allowed" : "bg-pink-600 hover:bg-pink-700"
+              loading
+                ? "bg-accent/70 cursor-not-allowed"
+                : "bg-accent hover:bg-accent/90"
             }`}
           >
-            {loading ? "Đang gửi..." : editingReviewId ? "Cập nhật đánh giá" : "Gửi đánh giá"}
+            {loading
+              ? "Đang gửi..."
+              : editingReviewId
+              ? "Cập nhật đánh giá"
+              : "Gửi đánh giá"}
           </button>
 
           {editingReviewId && (
@@ -225,8 +256,8 @@ const ReviewSection = () => {
             onClick={() => handleFilterRating(filter.value)}
             className={`px-3 py-1 rounded-lg border text-sm ${
               filterRating === filter.value
-                ? "bg-secondary text-white border-pink-600"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-pink-100"
+                ? "bg-accent text-white border-accent"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-accent/10"
             }`}
           >
             {filter.label}
@@ -236,7 +267,7 @@ const ReviewSection = () => {
 
       {!loadingList && (
         <p className="text-sm text-gray-600 mb-4">
-          Hiển thị <strong className="text-secondary">{total}</strong> đánh giá
+          Hiển thị <strong className="text-accent">{total}</strong> đánh giá
         </p>
       )}
 
@@ -252,7 +283,7 @@ const ReviewSection = () => {
             {reviews.map((review) => (
               <div
                 key={review._id}
-                className="flex flex-col sm:flex-row gap-4 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow"
+                className="flex sm:flex-row gap-4 bg-gray-50 p-4 rounded-lg hover:shadow-md transition-shadow"
               >
                 <div className="flex-shrink-0">
                   <Image
@@ -276,7 +307,9 @@ const ReviewSection = () => {
                             <FaStar
                               key={star}
                               className={`${
-                                star <= review.rating ? "text-yellow-400" : "text-gray-200"
+                                star <= review.rating
+                                  ? "text-yellow-400"
+                                  : "text-gray-200"
                               } text-sm`}
                             />
                           ))}
@@ -291,23 +324,30 @@ const ReviewSection = () => {
                       <div className="flex items-center gap-3 mt-2 sm:mt-0">
                         <button
                           onClick={() => handleEdit(review)}
-                          className="p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                          className="p-2 hover:bg-accent/10 rounded-lg transition-colors"
                           title="Sửa đánh giá"
                         >
-                          <FaEdit className="text-blue-600 text-lg" />
+                          <p className="text-blue-600 text-sm md:text-lg">
+                            Sửa
+                          </p>
                         </button>
-                        <button
+                        {/* <button
                           onClick={() => handleDelete(review._id)}
-                          className="p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                           title="Xoá đánh giá"
                         >
-                          <FaTrash className="text-red-600 text-lg" />
-                        </button>
+                          <p className="text-red-600 text-sm md:text-lg">
+                            {" "}
+                            Xoá{" "}
+                          </p>
+                        </button> */}
                       </div>
                     )}
                   </div>
 
-                  <p className="text-gray-600 text-sm leading-relaxed">{review.comment}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {review.comment}
+                  </p>
                 </div>
               </div>
             ))}
@@ -316,19 +356,21 @@ const ReviewSection = () => {
 
         {totalPages > 1 && (
           <div className="mt-6 flex justify-center gap-2">
-            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageChange(pageNumber)}
-                className={`px-3 py-1 rounded transition-all text-sm ${
-                  pageNumber === page
-                    ? "bg-pink-600 text-white shadow-md transform -translate-y-0.5"
-                    : "bg-gray-200 text-gray-700 hover:bg-pink-100"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            ))}
+            {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+              (pageNumber) => (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageChange(pageNumber)}
+                  className={`px-3 py-1 rounded transition-all text-sm ${
+                    pageNumber === page
+                      ? "bg-accent text-white shadow-md transform -translate-y-0.5"
+                      : "bg-gray-200 text-gray-700 hover:bg-accent/20"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              )
+            )}
           </div>
         )}
       </div>

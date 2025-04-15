@@ -62,8 +62,8 @@ export default function BlogDetailPage() {
   return (
     <>
     <Breadcrumb currentTitle={blog.title} />
-      <div className="container mx-auto px-4 py-10">
-        <div className="w-full mx-auto bg-white p-8 rounded-xl shadow-md">
+      <div className="w-full mx-auto">
+        <div className="w-full mx-auto bg-white p-2 md:p-8 rounded-xl shadow-md">
           {/* Tiêu đề */}
           <h1 className="text-3xl md:text-4xl font-bold text-teal-700 mb-4 leading-snug">
             {blog.title}

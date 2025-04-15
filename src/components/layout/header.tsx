@@ -173,7 +173,7 @@ const Header = () => {
             </button>
             <Link
               href="/wishlist"
-              className="text-primary hover:text-opacity-80 hidden sm:block"
+              className="text-primary hover:text-opacity-80"
             >
               <FaHeart size={20} />
             </Link>

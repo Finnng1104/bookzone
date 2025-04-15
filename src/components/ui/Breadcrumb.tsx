@@ -26,9 +26,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ currentTitle }) => {
   const isDetailPage = !!currentTitle;
 
   return (
-    <div className="bg-secondary py-8">
+    <div className="bg-secondary hidden md:block py-8">
       <div className="w-full xl:container mx-auto px-4">
-        <div className="text-white text-sm flex space-x-2">
+        <div className="text-white text-sm flex-wrap flex space-x-2">
           {/* Trang chủ */}
           <Link href="/" className="hover:underline">Trang chủ</Link>
 

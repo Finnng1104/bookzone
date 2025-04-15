@@ -4,7 +4,15 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { FaHeart, FaBookOpen, FaStar, FaEye, FaDownload, FaRegHeart, FaSpinner } from "react-icons/fa";
+import {
+  FaHeart,
+  FaBookOpen,
+  FaStar,
+  FaEye,
+  FaDownload,
+  FaRegHeart,
+  FaSpinner,
+} from "react-icons/fa";
 import { usePostWishlist } from "@/hooks/useWishlist";
 import Cookies from "js-cookie";
 import axios from "axios";
@@ -34,7 +42,9 @@ const BookDetail = () => {
     const fetchBook = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`https://bookzone-server.onrender.com/api/books/slug/${slug}`);
+        const res = await fetch(
+          `https://bookzone-server.onrender.com/api/books/slug/${slug}`
+        );
         const data = await res.json();
 
         if (res.ok && data.success && data.data) {
@@ -107,8 +117,8 @@ const BookDetail = () => {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-gray-600">
-          <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
-          <p className="text-lg">Đang tải sách...</p>
+        <FaSpinner className="animate-spin text-4xl text-teal-600 mb-4" />
+        <p className="text-lg">Đang tải sách...</p>
       </div>
     );
   }
@@ -117,9 +127,16 @@ const BookDetail = () => {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy sách!</h2>
-          <p className="text-gray-600">Sách bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
-          <Link href="/" className="mt-4 inline-block px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
+            Không tìm thấy sách!
+          </h2>
+          <p className="text-gray-600">
+            Sách bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.
+          </p>
+          <Link
+            href="/"
+            className="mt-4 inline-block px-6 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          >
             Quay về trang chủ
           </Link>
         </div>
@@ -145,31 +162,52 @@ const BookDetail = () => {
             </div>
 
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3">{book.title}</h1>
-              <p className="text-white mb-4">bởi <span className="font-semibold">{book.author}</span></p>
+              <h1 className="text-3xl md:text-4xl font-bold mb-3">
+                {book.title}
+              </h1>
 
-              <div className="flex items-center gap-6 text-teal-100 mb-6">
-                <div className="flex items-center gap-2">
+              <p className="text-white mb-4">
+                bởi{" "}
+                <span className="font-semibold">
+                  {book.author || "Tác giả không xác định"}
+                </span>
+              </p>
+
+              <div className="flex items-center flex-wrap gap-x-6 gap-y-2 text-teal-100 mb-6 text-sm sm:text-base">
+                <div className="flex items-center gap-1.5">
                   <FaEye className="text-white" />
-                  <span>{book.views} lượt xem</span>
+                  <span>{book.views?.toLocaleString()} lượt xem</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <FaHeart className="text-white" />
-                  <span>{book.favorites} yêu thích</span>
+                  <span>{book.favorites?.toLocaleString()} yêu thích</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <FaStar className="text-yellow-400" />
                   <span>{book.rating}</span>
                 </div>
               </div>
 
-              <div className="space-y-3 mb-8 text-teal-100">
-                <p><strong className="text-white">Thể loại:</strong> {book.category?.join(" • ") || "Chưa phân loại"}</p>
-                {book.series && <p><strong className="text-white">Bộ sách:</strong> {book.series}</p>}
-                {book.source && <p><strong className="text-white">Nguồn:</strong> {book.source}</p>}
+              <div className="space-y-2 mb-8 text-teal-100 text-sm sm:text-base leading-relaxed">
+                <p>
+                  <span className="font-semibold text-white">Thể loại:</span>{" "}
+                  {book.category?.length > 0
+                    ? book.category.join(" • ")
+                    : "Chưa phân loại"}
+                </p>
+                {book.series && (
+                  <p>
+                    <span className="font-semibold text-white">Bộ sách:</span>{" "}
+                    {book.series}
+                  </p>
+                )}
+                <p>
+                  <span className="font-semibold text-white">Nguồn:</span>{" "}
+                  {book.source || "Đang Cập Nhật"}
+                </p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
                 <Link
                   href={book.formats?.pdf ? `/doc-sach/${book.slug}` : "#"}
                   className={`px-6 py-3 rounded-lg flex items-center gap-2 transition-colors ${
@@ -182,13 +220,6 @@ const BookDetail = () => {
                 </Link>
 
                 <button
-                  onClick={handleDownload}
-                  className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
-                >
-                  <FaDownload /> Tải Xuống PDF
-                </button>
-
-                <button
                   disabled={hasShownError}
                   onClick={handleAddToWishlist}
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
@@ -199,6 +230,13 @@ const BookDetail = () => {
                 >
                   {isFavorite ? <FaHeart /> : <FaRegHeart />}
                   {isFavorite ? "Đã Yêu Thích" : "Thêm vào Yêu Thích"}
+                </button>
+
+                <button
+                  onClick={handleDownload}
+                  className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
+                >
+                  <FaDownload /> Tải Xuống PDF
                 </button>
               </div>
             </div>
@@ -237,7 +275,8 @@ const BookDetail = () => {
               <div className="text-gray-700 p-6 md:p-0">
                 <h2 className="text-xl font-bold mb-2">Giới thiệu tác giả</h2>
                 <p>
-                  <span className="font-semibold">{book.author}</span> là một nhà văn nổi tiếng với nhiều tác phẩm được yêu thích.
+                  <span className="font-semibold">{book.author}</span> là một
+                  nhà văn nổi tiếng với nhiều tác phẩm được yêu thích.
                 </p>
               </div>
             )}
@@ -246,17 +285,23 @@ const BookDetail = () => {
           </div>
         </div>
 
-        <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 mb-8">
-          <h3 className="text-teal-800 font-semibold mb-4">Lưu ý quan trọng</h3>
-          <div className="space-y-3">
+        <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 sm:p-6 mb-8">
+          <h3 className="text-teal-800 font-semibold mb-4 text-base sm:text-lg">
+            Lưu ý quan trọng
+          </h3>
+          <div className="space-y-4">
             {[
               "Nếu bạn có điều kiện, hãy mua sách giấy để ủng hộ tác giả.",
               "Sách ebook được sưu tầm từ Internet. Bản quyền thuộc về Tác giả & Nhà xuất bản.",
               "Website có gắn quảng cáo để duy trì hoạt động. Mong bạn đọc thông cảm.",
             ].map((note, idx) => (
               <div key={idx} className="flex items-start gap-3">
-                <FaStar className="text-yellow-500 mt-1 flex-shrink-0" />
-                <p className="text-teal-700">{note}</p>
+                <div className="pt-1">
+                  <FaStar className="text-yellow-400 text-base sm:text-lg" />
+                </div>
+                <p className="text-teal-700 text-sm sm:text-base leading-relaxed">
+                  {note}
+                </p>
               </div>
             ))}
           </div>
@@ -264,7 +309,9 @@ const BookDetail = () => {
 
         {book.category && book.category.length > 0 && (
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Sách liên quan</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Sách liên quan
+            </h2>
             <RelatedBooks category={book.category[0]} />
           </div>
         )}
