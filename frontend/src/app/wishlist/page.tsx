@@ -65,7 +65,7 @@ const Wishlist = () => {
       onSuccess: () => {
         const updatedBooks = books.filter(book => book.id !== id);
         setBooks(updatedBooks);
-        queryClient.invalidateQueries({ queryKey: ['wishlists'] });
+        queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       },
       onError: (error) => {
         console.error('Lỗi khi xoá wishlist:', error);

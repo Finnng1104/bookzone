@@ -18,7 +18,6 @@ interface Book {
   views?: number;
   category?: string[];  
   _id: string;
-  userId: string;
 }
 
 interface BookListProps {
@@ -106,7 +105,6 @@ const BookList: React.FC<BookListProps> = ({
                       views={book.views}
                       rating={book.rating}
                       bookId={book._id} 
-                      userId={book.userId}
                     />
                   </SwiperSlide>
                 ))}
@@ -126,7 +124,6 @@ const BookList: React.FC<BookListProps> = ({
                   views={book.views}
                   rating={book.rating}
                   bookId={book._id} 
-                  userId={book.userId}
                 />
               ))}
             </div>

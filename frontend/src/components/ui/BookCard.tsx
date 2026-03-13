@@ -20,7 +20,6 @@ interface BookCardProps {
   isNew?: boolean;
   isHot?: boolean;
   bookId: string;
-  userId: string;
 }
 
 interface WishlistItem {
@@ -40,43 +39,50 @@ const BookCard: React.FC<BookCardProps> = ({
   isNew = false,
   isHot = false,
   bookId,
-  userId,
 }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
 
   const router = useRouter();
-  const { data: wishlistData, refetch } = useGetWishlist(userId);
+  const userCookie = Cookies.get("user");
+  const currentUserId = (() => {
+    if (!userCookie) return "";
+    try {
+      const parsedUser = JSON.parse(userCookie);
+      return parsedUser?.id || "";
+    } catch {
+      return "";
+    }
+  })();
+
+  const { data: wishlistData, refetch } = useGetWishlist(currentUserId);
   const { mutateAsync: addToWishlistAsync } = usePostWishlist();
   const { mutateAsync: removeFromWishlistAsync } = useDeleteWishlist();
+  const wishlists: WishlistItem[] = wishlistData?.wishlists || [];
 
-  const isInWishlist = wishlistData?.wishlist?.some((item: WishlistItem) => item.bookId === bookId);
+  const isInWishlist = wishlists.some((item: WishlistItem) => item.bookId === bookId);
 
   const handleWishlistClick = async () => {
     try {
-    
-      const userCookie = Cookies.get("user");
-      if (!userCookie) {
+      if (!currentUserId) {
         toast.error("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
         router.push("/login");
         return;
       }
-    
-      const user = JSON.parse(userCookie);
-    
-      if (!user.id || !bookId) {
+
+      if (!bookId) {
         toast.error("Không đủ thông tin người dùng hoặc sách.");
         return;
       }
-    
+
       if (isInWishlist) {
-        const wishlistItem = wishlistData?.wishlist?.find((item: WishlistItem) => item.bookId === bookId);
+        const wishlistItem = wishlists.find((item: WishlistItem) => item.bookId === bookId);
         if (wishlistItem) {
           await removeFromWishlistAsync(wishlistItem._id);
           toast.success("Đã xoá khỏi danh sách yêu thích!");
           refetch();
         }
       } else {
-        const response = await addToWishlistAsync({ bookId, userId: user.id });
+        const response = await addToWishlistAsync({ bookId, userId: currentUserId });
         if (response?.status === "Success") {
           toast.success("Đã thêm vào danh sách yêu thích!");
           refetch();

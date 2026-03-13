@@ -13,7 +13,7 @@ import {
   FaRegHeart,
   FaSpinner,
 } from "react-icons/fa";
-import { usePostWishlist } from "@/hooks/useWishlist";
+import { useGetWishlist, usePostWishlist } from "@/hooks/useWishlist";
 import Cookies from "js-cookie";
 import axios from "axios";
 axios.defaults.withCredentials = true;
@@ -22,19 +22,33 @@ import RelatedBooks from "@/components/ui/RelatedBooks";
 import ReviewSection from "@/components/ui/ReviewSection";
 import toast from "react-hot-toast";
 
+interface WishlistItem {
+  _id: string;
+  bookId: string;
+}
+
 const BookDetail = () => {
   const router = useRouter();
   const { mutateAsync: postwishlist } = usePostWishlist();
+  const [currentUserId, setCurrentUserId] = useState("");
+  const { data: wishlistData, refetch: refetchWishlist } = useGetWishlist(currentUserId);
   const { slug } = useParams();
   const [book, setBook] = useState<IBook | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("description");
-  const [hasShownError, setHasShownError] = useState(false);
 
   useEffect(() => {
-    setHasShownError(false);
-  }, [isFavorite]);
+    const userCookie = Cookies.get("user");
+    if (!userCookie) return;
+
+    try {
+      const user = JSON.parse(userCookie);
+      setCurrentUserId(user?.id || "");
+    } catch {
+      setCurrentUserId("");
+    }
+  }, []);
 
   useEffect(() => {
     if (!slug) return;
@@ -62,6 +76,12 @@ const BookDetail = () => {
     fetchBook();
   }, [slug]);
 
+  useEffect(() => {
+    if (!book?._id) return;
+    const wishlists: WishlistItem[] = wishlistData?.wishlists || [];
+    setIsFavorite(wishlists.some((item) => item.bookId === book._id));
+  }, [book?._id, wishlistData]);
+
   const handleDownload = () => {
     if (book?.formats?.pdf) {
       window.open(book.formats.pdf, "_blank");
@@ -71,46 +91,39 @@ const BookDetail = () => {
   };
 
   const handleAddToWishlist = async () => {
-    const userCookie = Cookies.get("user");
-    if (!userCookie) {
+    if (!currentUserId) {
       toast.error("Bạn cần đăng nhập để thêm vào danh sách yêu thích.");
       router.push("/login");
       return;
     }
 
-    const user = JSON.parse(userCookie);
-
-    if (!user.id || !book?._id) {
+    if (!book?._id) {
       alert("Không đủ thông tin người dùng hoặc sách.");
       return;
     }
 
     if (isFavorite) {
-      if (!hasShownError) {
-        toast.error("Sách đã có trong danh sách yêu thích.");
-        setHasShownError(true);
-        return;
-      }
+      toast.error("Sách đã có trong danh sách yêu thích.");
       return;
     }
 
     try {
       const response = await postwishlist({
-        userId: user.id,
+        userId: currentUserId,
         bookId: book._id,
       });
 
       if (response?.status === "Success") {
         toast.success("Đã thêm vào danh sách yêu thích!");
         setIsFavorite(true);
-        setHasShownError(false);
+        refetchWishlist();
       } else {
         alert("Thêm vào yêu thích thất bại.");
       }
     } catch (error) {
       console.error("Lỗi khi thêm yêu thích:", error);
       toast.error("Sách đã có trong danh sách yêu thích");
-      setHasShownError(true);
+      refetchWishlist();
     }
   };
 
@@ -220,10 +233,9 @@ const BookDetail = () => {
                 </Link>
 
                 <button
-                  disabled={hasShownError}
                   onClick={handleAddToWishlist}
                   className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-colors ${
-                    isFavorite || hasShownError
+                    isFavorite
                       ? "bg-red-500 hover:bg-red-600 text-white"
                       : "bg-white text-teal-700 hover:bg-teal-100"
                   }`}
