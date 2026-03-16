@@ -21,9 +21,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   );
 
   return (
-    <html lang="vi">
+    <html lang="vi" suppressHydrationWarning>
       <QueryClientProvider client={queryClient}>
-        <body className="min-h-screen flex flex-col bg-white text-gray-900">
+        <body
+          className="min-h-screen flex flex-col bg-white text-gray-900"
+          suppressHydrationWarning
+        >
           {!isAuthPage && <Header />}
           <main className="flex-grow">{children}</main>
           {!isAuthPage && <Footer />}

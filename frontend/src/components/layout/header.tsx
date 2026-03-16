@@ -7,11 +7,10 @@ import {
   FaBars,
   FaPhone,
   FaEnvelope,
-  FaClock,
-  FaComments,
+  // FaComments,
   FaUser,
   FaTimes,
-  FaHeadset,
+  // FaHeadset,
   FaChevronDown,
 } from "react-icons/fa";
 import Cookies from "js-cookie";
@@ -62,14 +61,11 @@ const Header = () => {
                 <FaPhone size={14} /> <span>+208-666-0112</span>
               </span>
               <span className="flex items-center space-x-2">
-                <FaEnvelope size={14} /> <span>info@example.com</span>
-              </span>
-              <span className="flex items-center space-x-2 hidden lg:flex">
-                <FaClock size={14} /> <span>Sun - Fri: 9 AM - 6 PM</span>
+                <FaEnvelope size={14} /> <span>info@bookzone.com</span>
               </span>
             </div>
 
-            <div className="flex space-x-4">
+            {/* <div className="flex space-x-4">
               <Link
                 href="/support"
                 className="flex items-center space-x-2 hover:text-opacity-80"
@@ -82,7 +78,7 @@ const Header = () => {
               >
                 <FaComments size={14} /> <span>Live Chat</span>
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
 
