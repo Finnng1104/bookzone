@@ -1,20 +1,27 @@
-import dotenv from 'dotenv';
-import express from 'express';
-import cors from 'cors';
-import bookRoutes from './routes/book.routes';
-import connectDB from './config/db';
-import authRoutes from './routes/auth.routes';
-import wishlistRoutes from './routes/wishlist.routes';
-import cookieParser from 'cookie-parser';
-  import reviewRoutes from './routes/review.route';
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import bookRoutes from "./routes/book.routes";
+import connectDB from "./config/db";
+import authRoutes from "./routes/auth.routes";
+import wishlistRoutes from "./routes/wishlist.routes";
+import cookieParser from "cookie-parser";
+import reviewRoutes from "./routes/review.route";
 const app = express();
 app.use(cookieParser());
 dotenv.config();
 connectDB();
-app.use(cors({
-  origin: ['https://bookzone-black.vercel.app', 'https://bookzone.io.vn', 'http://localhost:3000'],
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: [
+      "https://bookzone-black.vercel.app",
+      "https://bookzone.thelittlecoder.dev",
+      "https://bookzone.io.vn",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 app.use("/api/books", bookRoutes);
