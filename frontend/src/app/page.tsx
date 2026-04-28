@@ -10,22 +10,37 @@ import "slick-carousel/slick/slick-theme.css";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+const fetchBooksFromApi = async (path: string) => {
+  if (!API_URL) {
+    console.error("[Home] Missing NEXT_PUBLIC_API_URL in runtime environment.");
+    return [];
+  }
+
+  const url = `${API_URL}${path}`;
+  const res = await fetch(url, { cache: "no-store" });
+  const raw = await res.text();
+
+  if (!res.ok) {
+    console.error(`[Home] API request failed (${res.status}) at ${url}: ${raw.slice(0, 200)}`);
+    return [];
+  }
+
+  try {
+    const json = JSON.parse(raw);
+    return Array.isArray(json?.data) ? json.data : [];
+  } catch {
+    console.error(`[Home] Invalid JSON response at ${url}: ${raw.slice(0, 200)}`);
+    return [];
+  }
+};
+
 const getBooks = async () => {
   const category = encodeURIComponent("Quản Trị");
-  const res = await fetch(`${API_URL}/api/books/category/${category}?limit=12`, {
-    cache: "no-store",
-  });
-  const json = await res.json();
-  return json.data;
+  return fetchBooksFromApi(`/api/books/category/${category}?limit=12`);
 };
 
 const getHotBooks = async () => {
-  const res = await fetch(`${API_URL}/api/books/category/Hot?limit=12`, {
-    cache: "no-store",
-  });
-  const json = await res.json();
-
-  return json.data;
+  return fetchBooksFromApi("/api/books/category/Hot?limit=12");
 };
 
 
