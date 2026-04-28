@@ -2,13 +2,12 @@
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { useQuery  } from '@tanstack/react-query';
-import dotenv from "dotenv";
 axios.defaults.withCredentials = true;
 
-dotenv.config();
-const BASE_URL_POST_WISHLIST = process.env.NEXT_PUBLIC_POSTWISHLIST;
-const BASE_URL_GET_WISHLIST = process.env.NEXT_PUBLIC_GETWISHLIST;
-const BASE_URL_DELETE_WISHLIST = process.env.NEXT_PUBLIC_DELETEWISHLIST;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL_POST_WISHLIST = API_BASE_URL ? `${API_BASE_URL}/api/wishlist/postwishlist` : "";
+const BASE_URL_GET_WISHLIST = API_BASE_URL ? `${API_BASE_URL}/api/wishlist/getallwishlists` : "";
+const BASE_URL_DELETE_WISHLIST = API_BASE_URL ? `${API_BASE_URL}/api/wishlist/deletewishlist` : "";
 
   
   interface WishlistInput {

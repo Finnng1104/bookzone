@@ -1,16 +1,14 @@
 "use client"
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import dotenv from "dotenv"; 
 // import { GoogleLogin } from "@react-oauth/google";
 
-dotenv.config(); 
-const BASE_URL_LOGIN = process.env.NEXT_PUBLIC_LOGIN; 
-const BASE_URL_REGISTER = process.env.NEXT_PUBLIC_REGISTER;
-// const BASE_URL_EMAILDUBPLICATE = process.env.NEXT_PUBLIC_EMAILDUPLICATE;
-const BASE_URL_LOGIN_GOOGLE = process.env.NEXT_PUBLIC_LOGIN_GOOGLE;
-const BASE_URL_FORGOTPASSWORD = process.env.NEXT_PUBLIC_FORGOTPASSWORD;
-const BASE_URL_CHANGE_PASSWORD = process.env.NEXT_PUBLIC_RESETPASSWORD
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL_LOGIN = API_BASE_URL ? `${API_BASE_URL}/api/auth/login` : "";
+const BASE_URL_REGISTER = API_BASE_URL ? `${API_BASE_URL}/api/auth/register` : "";
+const BASE_URL_LOGIN_GOOGLE = API_BASE_URL ? `${API_BASE_URL}/api/auth/google-login` : "";
+const BASE_URL_FORGOTPASSWORD = API_BASE_URL ? `${API_BASE_URL}/api/auth/forgotpassword` : "";
+const BASE_URL_CHANGE_PASSWORD = API_BASE_URL ? `${API_BASE_URL}/api/auth/changepassword` : "";
 interface RegisterData {
   fullname: string;
   email: string; 
@@ -99,4 +97,3 @@ export const useChangePassword = () => {
     },
   });
 };
-

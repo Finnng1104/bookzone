@@ -8,6 +8,9 @@ export const createBook = async (data: IBook) => {
 
 export const getAllBooks = async (page: number, limit: number) => {
   const skip = (page - 1) * limit;
+  console.log("[getAllBooks] db=%s collection=%s page=%d limit=%d", Book.db.name, Book.collection.name, page, limit);
+  const directCount = await Book.collection.countDocuments();
+  console.log("[getAllBooks] direct collection count =", directCount);
 
   const [books, total] = await Promise.all([
     Book.find().skip(skip).limit(limit),

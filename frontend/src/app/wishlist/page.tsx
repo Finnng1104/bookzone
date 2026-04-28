@@ -25,6 +25,9 @@ interface WishlistItem {
   bookId: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BOOK_DETAIL_URL = API_BASE_URL ? `${API_BASE_URL}/api/books/id` : "";
+
 const Wishlist = () => {
   const queryClient = useQueryClient();
   const [books, setBooks] = useState<Book[]>([]);
@@ -43,7 +46,7 @@ const Wishlist = () => {
             data.wishlists.map(async (item: WishlistItem) => {
               try {
                 const res = await axios.get(
-                  `${process.env.NEXT_PUBLIC_BOOK_DETAIL}/${item.bookId}`,
+                  `${BOOK_DETAIL_URL}/${item.bookId}`,
                 );
                 const book = res.data.data;
                 return {
@@ -163,11 +166,10 @@ const Wishlist = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setViewMode("grid")}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        viewMode === "grid"
+                      className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "grid"
                           ? "bg-teal-100 text-teal-700 border border-teal-300"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                      }`}
+                        }`}
                       title="Grid view"
                     >
                       <svg
@@ -186,11 +188,10 @@ const Wishlist = () => {
                     </button>
                     <button
                       onClick={() => setViewMode("list")}
-                      className={`p-2 rounded-lg transition-all duration-200 ${
-                        viewMode === "list"
+                      className={`p-2 rounded-lg transition-all duration-200 ${viewMode === "list"
                           ? "bg-teal-100 text-teal-700 border border-teal-300"
                           : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                      }`}
+                        }`}
                       title="List view"
                     >
                       <svg

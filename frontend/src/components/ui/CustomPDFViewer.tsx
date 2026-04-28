@@ -18,6 +18,8 @@ interface CustomPDFViewerProps {
   slug?: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -60,7 +62,11 @@ const CustomPDFViewer: React.FC<CustomPDFViewerProps> = ({ slug }) => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const res = await fetch(`https://bookzone-server.onrender.com/api/books/slug/${slug}`);
+        if (!API_BASE_URL) {
+          throw new Error("NEXT_PUBLIC_API_URL chưa được cấu hình");
+        }
+
+        const res = await fetch(`${API_BASE_URL}/api/books/slug/${slug}`);
         const response = await res.json();
         const data = response.data;
 

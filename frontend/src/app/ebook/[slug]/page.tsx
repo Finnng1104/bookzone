@@ -27,6 +27,8 @@ interface WishlistItem {
   bookId: string;
 }
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const BookDetail = () => {
   const router = useRouter();
   const { mutateAsync: postwishlist } = usePostWishlist();
@@ -56,9 +58,11 @@ const BookDetail = () => {
     const fetchBook = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `https://bookzone-server.onrender.com/api/books/slug/${slug}`
-        );
+        if (!API_BASE_URL) {
+          throw new Error("NEXT_PUBLIC_API_URL chưa được cấu hình");
+        }
+
+        const res = await fetch(`${API_BASE_URL}/api/books/slug/${slug}`);
         const data = await res.json();
 
         if (res.ok && data.success && data.data) {

@@ -9,6 +9,8 @@ import FilterBar from "../ui/Filter";
 import { useRouter, usePathname } from "next/navigation";
 import { FaSpinner } from "react-icons/fa";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const BookLibrary = () => {
   const [books, setBooks] = useState<IBook[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,21 +27,25 @@ const BookLibrary = () => {
       setLoading(true);
 
       try {
-        let url = `https://bookzone-server.onrender.com/api/books?page=${currentPage}`;
+        if (!API_BASE_URL) {
+          throw new Error("NEXT_PUBLIC_API_URL chưa được cấu hình");
+        }
+
+        let url = `${API_BASE_URL}/api/books?page=${currentPage}`;
 
         if (query?.trim()) {
           const encodedQuery = encodeURIComponent(query.trim());
 
           if (type === "title") {
-            url = `https://bookzone-server.onrender.com/api/books/search/title/${encodedQuery}?page=${currentPage}`;
+            url = `${API_BASE_URL}/api/books/search/title/${encodedQuery}?page=${currentPage}`;
           } else if (type === "author") {
-            url = `https://bookzone-server.onrender.com/api/books/search/author/${encodedQuery}?page=${currentPage}`;
+            url = `${API_BASE_URL}/api/books/search/author/${encodedQuery}?page=${currentPage}`;
           } else if (type === "category") {
-            url = `https://bookzone-server.onrender.com/api/books/category/${encodedQuery}?page=${currentPage}`;
+            url = `${API_BASE_URL}/api/books/category/${encodedQuery}?page=${currentPage}`;
           }
         } else if (filter !== "all") {
           const category = encodeURIComponent(filter);
-          url = `https://bookzone-server.onrender.com/api/books/category/${category}?page=${currentPage}`;
+          url = `${API_BASE_URL}/api/books/category/${category}?page=${currentPage}`;
         }
 
         const res = await fetch(url);
